@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aminos AI - Smart Chatbots for Businesses</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: var(--dark);
+        }
+        
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: white;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: #d1d5db;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .hero .btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Stats */
+        .stats {
+            background: white;
+            padding: 3rem 2rem;
+            margin-top: -2rem;
+        }
+        
+        .stats-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 12px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Features */
+        .features {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 0.75rem;
+        }
+        
+        .feature-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* Use Cases */
+        .use-cases {
+            background: var(--light);
+            padding: 5rem 2rem;
+        }
+        
+        .use-cases-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+        }
+        
+        .use-case {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .use-case h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .use-case h3 span {
+            font-size: 1.5rem;
+        }
+        
+        .use-case ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+        
+        .use-case li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .use-case li::before {
+            content: "✓";
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        /* White Label */
+        .whitelabel {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .whitelabel h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .whitelabel p {
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .whitelabel-features {
+            max-width: 900px;
+            margin: 3rem auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            text-align: left;
+        }
+        
+        .whitelabel-item {
+            background: rgba(255,255,255,0.15);
+            padding: 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .whitelabel-item h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .whitelabel-item p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Pricing */
+        .pricing {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .pricing-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .pricing-card:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+        
+        .pricing-card.featured {
+            border-color: var(--primary);
+            position: relative;
+        }
+        
+        .pricing-card.featured::before {
+            content: "Most Popular";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+        
+        .price span {
+            font-size: 1rem;
+            color: var(--gray);
+            font-weight: normal;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+            margin: 1.5rem 0;
+        }
+        
+        .pricing-features li {
+            padding: 0.5rem 0;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .pricing-features li::before {
+            content: "✓";
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        /* CTA */
+        .cta {
+            background: var(--dark);
+            color: white;
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cta p {
+            color: #d1d5db;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: #111827;
+            color: #9ca3af;
+            padding: 3rem 2rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-col ul {
+            list-style: none;
+        }
+        
+        .footer-col li {
+            padding: 0.25rem 0;
+        }
+        
+        .footer-col a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-col a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            text-align: center;
+        }
+        
+        /* Mobile */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .use-cases-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <div class="logo-icon">🤖</div>
+                Aminos AI
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#usecases">Use Cases</a></li>
+                <li><a href="#whitelabel">White Label</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+            </ul>
+            <a href="#contact" class="btn btn-primary">Get Started</a>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <h1>Smart AI Chatbots for<br><span>Every Business</span></h1>
+        <p>Automate customer support, generate leads, and grow your business 24/7 with intelligent AI bots. Perfect for local businesses, national brands, and resellers.</p>
+        <div class="hero-buttons">
+            <a href="#pricing" class="btn btn-primary">Start Free Trial</a>
+            <a href="#demo" class="btn btn-outline" style="border-color: white; color: white;">Watch Demo</a>
+        </div>
+    </section>
+    
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Active Businesses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">10K+</div>
+                <div class="stat-label">Leads Generated</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Industries Served</div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features" id="features">
+        <div class="section-title">
+            <h2>Powerful Features</h2>
+            <p>Everything you need to automate communications and grow your business</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Smart Conversations</h3>
+                <p>AI-powered chatbots that understand context, handle complex queries, and provide human-like responses.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Lead Generation</h3>
+                <p>Capture and qualify leads automatically. Set up custom workflows to nurture prospects into customers.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h3>Multi-Channel</h3>
+                <p>Deploy across website, Facebook, Instagram, WhatsApp, and more - all from one dashboard.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Appointment Booking</h3>
+                <p>Let customers book appointments directly through the bot. Integrates with your calendar.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛒</div>
+                <h3>E-Commerce</h3>
+                <p>Product recommendations, order tracking, and seamless checkout experiences.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3>Analytics Dashboard</h3>
+                <p>Track performance, monitor conversations, and optimize with detailed insights.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="use-cases" id="usecases">
+        <div class="section-title">
+            <h2>Built for Every Business</h2>
+            <p>Tailored solutions for businesses of all sizes</p>
+        </div>
+        <div class="use-cases-grid">
+            <div class="use-case">
+                <h3>🏪 Local Businesses</h3>
+                <p>Perfect for small to medium local businesses looking to automate customer service</p>
+                <ul>
+                    <li>Restaurant table reservations & menus</li>
+                    <li>Salon & spa appointment scheduling</li>
+                    <li>Auto repair & service bookings</li>
+                    <li>Real estate inquiries & property showings</li>
+                    <li>Local retail inventory checks</li>
+                    <li>Emergency plumbing/HVAC dispatch</li>
+                </ul>
+            </div>
+            <div class="use-case">
+                <h3>🏢 National Brands</h3>
+                <p>Enterprise-grade solutions for large organizations</p>
+                <ul>
+                    <li>24/7 customer support at scale</li>
+                    <li>Multi-location management</li>
+                    <li>HR & internal communications</li>
+                    <li>Brand-compliant responses</li>
+                    <li>Advanced analytics & reporting</li>
+                    <li>Custom integrations (CRM, Zendesk, etc.)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <section class="whitelabel" id="whitelabel">
+        <h2>White Label Solutions</h2>
+        <p>Become an AI reseller. Offer our technology under your own brand with full white label capabilities.</p>
+        <div class="whitelabel-features">
+            <div class="whitelabel-item">
+                <h4>🎨 Your Brand</h4>
+                <p>Custom branding, colors, logos, and domain for a fully white-labeled experience.</p>
+            </div>
+            <div class="whitelabel-item">
+                <h4>💰 Revenue Share</h4>
+                <p>Competitive pricing with margins up to 60% on all subscriptions.</p>
+            </div>
+            <div class="whitelabel-item">
+                <h4>🛠️ Full Control</h4>
+                <p>Manage client accounts, set pricing, and control all settings.</p>
+            </div>
+            <div class="whitelabel-item">
+                <h4>📦 Reseller Dashboard</h4>
+                <p>Complete admin panel to manage all your client bots in one place.</p>
+            </div>
+            <div class="whitelabel-item">
+                <h4>🔌 API Access</h4>
+                <p>Full API access to integrate AI bots into your existing products.</p>
+            </div>
+            <div class="whitelabel-item">
+                <h4>🎯 Dedicated Support</h4>
+                <p>Priority support and dedicated account manager for resellers.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="pricing" id="pricing">
+        <div class="section-title">
+            <h2>Simple, Transparent Pricing</h2>
+            <p>Start free, scale as you grow</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Starter</h3>
+                <div class="price">$29<span>/mo</span></div>
+                <ul class="pricing-features">
+                    <li>1 AI Bot</li>
+                    <li>500 conversations/mo</li>
+                    <li>Basic analytics</li>
+                    <li>Email support</li>
+                    <li>Website & chat integration</li>
+                </ul>
+                <a href="#contact" class="btn btn-outline">Start Free</a>
+            </div>
+            <div class="pricing-card featured">
+                <h3>Professional</h3>
+                <div class="price">$79<span>/mo</span></div>
+                <ul class="pricing-features">
+                    <li>3 AI Bots</li>
+                    <li>Unlimited conversations</li>
+                    <li>Advanced analytics</li>
+                    <li>Priority support</li>
+                    <li>All integrations</li>
+                    <li>Custom training</li>
+                    <li>White label ready</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary">Start Free</a>
+            </div>
+            <div class="pricing-card">
+                <h3>Enterprise</h3>
+                <div class="price">$199<span>/mo</span></div>
+                <ul class="pricing-features">
+                    <li>Unlimited bots</li>
+                    <li>Unlimited conversations</li>
+                    <li>Dedicated account manager</li>
+                    <li>Custom API access</li>
+                    <li>SLA guarantee</li>
+                    <li>On-premise options</li>
+                    <li>Full white label</li>
+                </ul>
+                <a href="#contact" class="btn btn-outline">Contact Us</a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta" id="contact">
+        <h2>Ready to Transform Your Business?</h2>
+        <p>Join hundreds of businesses already using Aminos AI to automate and grow.</p>
+        <a href="#" class="btn btn-primary">Start Your Free Trial</a>
+    </section>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>Aminos AI</h4>
+                <p>Smart AI chatbots for modern businesses.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#whitelabel">White Label</a></li>
+                    <li><a href="#">Integrations</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API Reference</a></li>
+                    <li><a href="#">Status</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Aminos AI. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
