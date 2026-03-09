@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BotForge - AI Chatbot Builder</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>BotForge - Smart Chatbots for Your Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #8b5cf6;
@@ -14,1626 +14,243 @@
             --surface-light: #1e1e3a;
             --accent: #f59e0b;
             --success: #10b981;
-            --error: #ef4444;
             --text: #e2e8f0;
             --text-muted: #94a3b8;
             --border: #334155;
-            --radius: 12px;
-            --shadow: 0 4px 24px rgba(0,0,0,0.3);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--secondary);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Animated Background */
-        .bg-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: 
-                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
-        }
-
-        .bg-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background-image: 
-                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        /* Header */
-        header {
-            background: rgba(26, 26, 46, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1600px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .logo h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--text), var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .logo span {
-            color: var(--accent);
-            -webkit-text-fill-color: var(--accent);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 10px 20px;
-            border-radius: var(--radius);
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: 500;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--surface-light);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border);
-        }
-
-        .btn-accent {
-            background: var(--accent);
-            color: var(--secondary);
-        }
-
-        .btn-accent:hover {
-            filter: brightness(1.1);
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--text-muted);
-        }
-
-        .btn-ghost:hover {
-            color: var(--text);
-            background: var(--surface-light);
-        }
-
-        /* Main Layout */
-        main {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 2rem;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            background: var(--surface);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            height: fit-content;
-            position: sticky;
-            top: 100px;
-        }
-
-        .sidebar h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .bot-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .bot-item {
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .bot-item:hover {
-            background: var(--surface-light);
-        }
-
-        .bot-item.active {
-            background: var(--surface-light);
-            border-color: var(--primary);
-        }
-
-        .bot-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .bot-info h4 {
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .bot-info span {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .new-bot-btn {
-            margin-top: 1rem;
-            width: 100%;
-            justify-content: center;
-            border: 2px dashed var(--border);
-            background: transparent;
-        }
-
-        .new-bot-btn:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        /* Content Area */
-        .content {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            background: var(--surface);
-            padding: 4px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-        }
-
-        .tab {
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--text-muted);
-            transition: all 0.2s;
-            border: none;
-            background: transparent;
-            font-family: inherit;
-            font-size: 0.9rem;
-        }
-
-        .tab:hover {
-            color: var(--text);
-        }
-
-        .tab.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Panels */
-        .panel {
-            background: var(--surface);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-
-        .panel-header {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .panel-header h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .panel-body {
-            padding: 1.5rem;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--surface-light);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-            font-family: 'Courier New', monospace;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        /* Color Picker */
-        .color-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 12px;
-        }
-
-        .color-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 12px;
-            background: var(--surface-light);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-
-        .color-item:hover {
-            transform: translateY(-2px);
-        }
-
-        .color-item.active {
-            border-color: var(--primary);
-        }
-
-        .color-preview {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            border: 2px solid var(--border);
-        }
-
-        .color-item span {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Range Slider */
-        .range-group {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .range-group input[type="range"] {
-            flex: 1;
-            -webkit-appearance: none;
-            height: 6px;
-            background: var(--surface-light);
-            border-radius: 3px;
-            border: none;
-            padding: 0;
-        }
-
-        .range-group input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            background: var(--primary);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .range-group input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        .range-value {
-            min-width: 50px;
-            text-align: center;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        /* Preview Widget */
-        .preview-container {
-            background: #f8fafc;
-            border-radius: var(--radius);
-            padding: 2rem;
-            min-height: 400px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .preview-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-size: cover;
-            background-position: center;
-            opacity: 1;
-        }
-
-        .chat-preview {
-            position: relative;
-            max-width: 400px;
-            margin: 0 auto;
-            height: 350px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 16px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .message.bot {
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.user {
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-
-        .chat-input-area {
-            padding: 1rem;
-            display: flex;
-            gap: 8px;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 12px 16px;
-            border-radius: 24px;
-            border: none;
-            font-size: 0.9rem;
-        }
-
-        .chat-send {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Upload Area */
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: var(--radius);
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: var(--surface-light);
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .upload-area input {
-            display: none;
-        }
-
-        .upload-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .upload-area p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Toggle Switch */
-        .toggle-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .toggle-group:last-child {
-            border-bottom: none;
-        }
-
-        .toggle {
-            width: 48px;
-            height: 26px;
-            background: var(--surface-light);
-            border-radius: 13px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .toggle.active {
-            background: var(--primary);
-        }
-
-        .toggle::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: all 0.2s;
-        }
-
-        .toggle.active::after {
-            left: 25px;
-        }
-
-        /* Model Cards */
-        .model-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1rem;
-        }
-
-        .model-card {
-            background: var(--surface-light);
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.25rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .model-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        }
-
-        .model-card.active {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        .model-card h4 {
-            font-size: 1-bottom: 4rem;
-            marginpx;
-        }
-
-        .model-card p {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .model-card .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            background: var(--success);
-            color: white;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-top: 8px;
-        }
-
-        /* Code Preview */
-        .code-preview {
-            background: #0d1117;
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
-            position: relative;
-        }
-
-        .code-preview .copy-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 6px 12px;
-            background: var(--surface-light);
-            border: none;
-            border-radius: 6px;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .code-preview .copy-btn:hover {
-            background: var(--primary);
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-        }
-
-        .stat-card {
-            background: var(--surface-light);
-            border-radius: var(--radius);
-            padding: 1.25rem;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .panel {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .toast.success {
-            border-color: var(--success);
-        }
-
-        .toast-icon {
-            font-size: 1.25rem;
-        }
-
-        /* Hidden */
-        .hidden {
-            display: none !important;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            main {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                position: relative;
-                top: 0;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--secondary); color: var(--text); min-height: 100vh; }
+        
+        /* Hero */
+        .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 20%, rgba(139,92,246,0.2) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(245,158,11,0.1) 0%, transparent 50%); z-index: -1; }
+        
+        .logo { font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tagline { font-size: 1.5rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; }
+        
+        /* What We Do */
+        .services { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1000px; margin: 2rem 0; }
+        .service { background: var(--surface); padding: 2rem; border-radius: 16px; border: 1px solid var(--border); text-align: left; transition: transform 0.3s; }
+        .service:hover { transform: translateY(-4px); }
+        .service-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .service h3 { margin-bottom: 0.5rem; color: var(--text); }
+        .service p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+        
+        /* Pricing */
+        .pricing { margin-top: 3rem; }
+        .pricing h2 { font-size: 2rem; margin-bottom: 2rem; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1000px; }
+        
+        .tier { background: var(--surface); padding: 2rem; border-radius: 16px; border: 2px solid var(--border); position: relative; transition: transform 0.3s; }
+        .tier:hover { transform: scale(1.02); }
+        .tier.featured { border-color: var(--primary); }
+        .tier-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--primary); padding: 0.25rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .tier-name { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .tier-price { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .tier-price span { font-size: 1rem; color: var(--text-muted); font-weight: 400; }
+        .tier-desc { color: var(--text-muted); margin-bottom: 1.5rem; }
+        .tier-features { list-style: none; text-align: left; margin-bottom: 1.5rem; }
+        .tier-features li { padding: 0.5rem 0; color: var(--text); }
+        .tier-features li::before { content: '✓'; margin-right: 0.75rem; color: var(--success); }
+        
+        .btn { display: inline-block; padding: 1rem 2rem; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; border: none; text-decoration: none; transition: all 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        
+        /* Demo Chat */
+        .demo-section { margin-top: 4rem; padding: 2rem; background: var(--surface); border-radius: 20px; max-width: 500px; width: 100%; }
+        .demo-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .demo-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .demo-chat { height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+        .msg { padding: 1rem; border-radius: 16px; max-width: 80%; animation: fadeIn 0.3s ease; }
+        .msg.bot { background: var(--surface-light); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg.user { background: var(--primary); align-self: flex-end; border-bottom-right-radius: 4px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Contact Form */
+        .contact { margin-top: 4rem; background: var(--surface); padding: 2rem; border-radius: 16px; max-width: 500px; width: 100%; }
+        .contact h3 { margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--secondary); color: var(--text); font-size: 1rem; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); }
+        
+        .footer { margin-top: 4rem; color: var(--text-muted); font-size: 0.9rem; }
     </style>
 </head>
 <body>
-    <div class="bg-pattern"></div>
-    <div class="bg-grid"></div>
-
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">🔥</div>
-                <h1>Bot<span>Forge</span></h1>
+    <div class="hero">
+        <div class="logo">🤖 BotForge</div>
+        <p class="tagline">Smart AI chatbots that work 24/7 for your business. No technical skills needed.</p>
+        
+        <!-- What We Do -->
+        <div class="services">
+            <div class="service">
+                <div class="service-icon">💬</div>
+                <h3>Smart Conversations</h3>
+                <p>AI-powered chatbots that understand your customers and provide helpful, human-like responses.</p>
             </div>
-            <div class="header-actions">
-                <button class="btn btn-ghost" onclick="openDemo()">▶ Watch Demo</button>
-                <button class="btn btn-ghost" onclick="openPricing()">💰 Pricing</button>
-                <button class="btn btn-ghost">📊 Analytics</button>
-                <button class="btn btn-primary" onclick="createNewBot()">+ New Bot</button>
+            <div class="service">
+                <div class="service-icon">📚</div>
+                <h3>Knows Your Business</h3>
+                <p>Upload your docs, FAQs, or website. Your bot learns everything about your business.</p>
+            </div>
+            <div class="service">
+                <div class="service-icon">⚡</div>
+                <h3>Instant Setup</h3>
+                <p>We build and manage everything. Just tell us what you need and we'll handle the rest.</p>
             </div>
         </div>
-    </header>
-
-    <main>
-        <aside class="sidebar">
-            <h3>Your Bots</h3>
-            <div class="bot-list" id="botList">
-                <div class="bot-item active" onclick="selectBot(0)">
-                    <div class="bot-avatar">A</div>
-                    <div class="bot-info">
-                        <h4>Anastasia</h4>
-                        <span>AI Influencer</span>
-                    </div>
+        
+        <!-- Pricing -->
+        <div class="pricing">
+            <h2>Choose Your Plan</h2>
+            <div class="pricing-grid">
+                <div class="tier">
+                    <div class="tier-name">🌱 Starter</div>
+                    <div class="tier-price">$29<span>/month</span></div>
+                    <p class="tier-desc">Perfect for small businesses</p>
+                    <ul class="tier-features">
+                        <li>1 AI Chatbot</li>
+                        <li>Up to 100 conversations/month</li>
+                        <li>Basic customization</li>
+                        <li>Email support</li>
+                    </ul>
+                    <button class="btn btn-outline" onclick="selectTier('starter')">Get Started</button>
                 </div>
-                <div class="bot-item" onclick="selectBot(1)">
-                    <div class="bot-avatar" style="background: linear-gradient(135deg, #10b981, #06b6d4)">S</div>
-                    <div class="bot-info">
-                        <h4>Support Bot</h4>
-                        <span>Customer Service</span>
-                    </div>
+                
+                <div class="tier featured">
+                    <div class="tier-badge">MOST POPULAR</div>
+                    <div class="tier-name">⭐ Professional</div>
+                    <div class="tier-price">$79<span>/month</span></div>
+                    <p class="tier-desc">For growing businesses</p>
+                    <ul class="tier-features">
+                        <li>3 AI Chatbots</li>
+                        <li>Up to 1,000 conversations/month</li>
+                        <li>Full customization</li>
+                        <li>Smarter AI (advanced brain)</li>
+                        <li>Webhooks & integrations</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="selectTier('professional')">Get Started</button>
                 </div>
-                <div class="bot-item" onclick="selectBot(2)">
-                    <div class="bot-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444)">M</div>
-                    <div class="bot-info">
-                        <h4>Max</h4>
-                        <span>Sales Assistant</span>
-                    </div>
-                </div>
-            </div>
-            <button class="btn new-bot-btn" onclick="createNewBot()">
-                <span>+</span> Create New Bot
-            </button>
-        </aside>
-
-        <div class="content">
-            <div class="tabs">
-                <button class="tab active" data-tab="appearance">🎨 Appearance</button>
-                <button class="tab" data-tab="ai">🤖 AI Config</button>
-                <button class="tab" data-tab="chat">💬 Chat Settings</button>
-                <button class="tab" data-tab="embed">📦 Embed</button>
-                <button class="tab" data-tab="analytics">📈 Analytics</button>
-            </div>
-
-            <!-- Appearance Tab -->
-            <div class="tab-content" id="appearance">
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>🎨 Chat Widget Colors</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Bot Message Bubble</label>
-                                <input type="color" id="botBubbleColor" value="#8b5cf6" onchange="updatePreview()">
-                            </div>
-                            <div class="form-group">
-                                <label>User Message Bubble</label>
-                                <input type="color" id="userBubbleColor" value="#1e1e3a" onchange="updatePreview()">
-                            </div>
-                            <div class="form-group">
-                                <label>Accent Color</label>
-                                <input type="color" id="accentColor" value="#f59e0b" onchange="updatePreview()">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Bot Text Color</label>
-                                <input type="color" id="botTextColor" value="#ffffff" onchange="updatePreview()">
-                            </div>
-                            <div class="form-group">
-                                <label>User Text Color</label>
-                                <input type="color" id="userTextColor" value="#ffffff" onchange="updatePreview()">
-                            </div>
-                            <div class="form-group">
-                                <label>Input Background</label>
-                                <input type="color" id="inputBgColor" value="#ffffff" onchange="updatePreview()">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>🖼️ Background</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>Background Type</label>
-                            <select id="bgType" onchange="updatePreview()">
-                                <option value="solid">Solid Color</option>
-                                <option value="gradient">Gradient</option>
-                                <option value="image">Image</option>
-                                <option value="animated">Animated</option>
-                            </select>
-                        </div>
-                        <div class="form-row" id="bgColorRow">
-                            <div class="form-group">
-                                <label>Background Color</label>
-                                <input type="color" id="bgColor" value="#151528" onchange="updatePreview()">
-                            </div>
-                            <div class="form-group">
-                                <label>Gradient Color 2</label>
-                                <input type="color" id="bgColor2" value="#1e1e3a" onchange="updatePreview()">
-                            </div>
-                        </div>
-                        <div class="form-group hidden" id="bgImageRow">
-                            <label>Upload Background Image</label>
-                            <div class="upload-area" onclick="document.getElementById('bgUpload').click()">
-                                <input type="file" id="bgUpload" accept="image/*" onchange="handleBgUpload(event)">
-                                <div class="upload-icon">📁</div>
-                                <p>Click to upload image (PNG, JPG, GIF)</p>
-                            </div>
-                        </div>
-                        <div class="form-group hidden" id="animatedBgRow">
-                            <label>Animated Background</label>
-                            <select id="animatedBg" onchange="updatePreview()">
-                                <option value="none">None</option>
-                                <option value="particles">Particles</option>
-                                <option value="waves">Waves</option>
-                                <option value="gradient">Gradient Flow</option>
-                                <option value="stars">Stars</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>👤 Bot Avatar</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Upload Avatar</label>
-                                <div class="upload-area" onclick="document.getElementById('avatarUpload').click()">
-                                    <input type="file" id="avatarUpload" accept="image/*" onchange="handleAvatarUpload(event)">
-                                    <div class="upload-icon">👤</div>
-                                    <p>Click to upload avatar</p>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Avatar Shape</label>
-                                <select id="avatarShape" onchange="updatePreview()">
-                                    <option value="circle">Circle</option>
-                                    <option value="square">Square</option>
-                                    <option value="rounded">Rounded Square</option>
-                                    <option value="none">Hidden</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Avatar Position</label>
-                                <select id="avatarPosition" onchange="updatePreview()">
-                                    <option value="left">Left</option>
-                                    <option value="right">Right</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>✏️ Fonts & Style</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Font Family</label>
-                                <select id="fontFamily" onchange="updatePreview()">
-                                    <option value="Outfit, sans-serif">Outfit (Modern)</option>
-                                    <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
-                                    <option value="system-ui, sans-serif">System Default</option>
-                                    <option value="'Courier New', monospace">Courier</option>
-                                    <option value="Georgia, serif">Georgia</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Font Size</label>
-                                <select id="fontSize" onchange="updatePreview()">
-                                    <option value="12px">Small</option>
-                                    <option value="14px" selected>Medium</option>
-                                    <option value="16px">Large</option>
-                                    <option value="18px">Extra Large</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Bubble Style</label>
-                                <select id="bubbleStyle" onchange="updatePreview()">
-                                    <option value="rounded">Rounded</option>
-                                    <option value="square">Square</option>
-                                    <option value="pill">Pill</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Live Preview -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>👁️ Live Preview</h2>
-                        <button class="btn btn-secondary" onclick="updatePreview()">🔄 Refresh</button>
-                    </div>
-                    <div class="panel-body">
-                        <div class="preview-container" id="previewContainer">
-                            <div class="preview-background" id="previewBg"></div>
-                            <div class="chat-preview" id="chatPreview">
-                                <div class="chat-messages" id="chatMessages">
-                                    <div class="message bot" id="previewBotMsg">Hi! I'm your AI assistant. How can I help you today?</div>
-                                    <div class="message user">Hello! Can you tell me about yourself?</div>
-                                    <div class="message bot">I'm an AI chatbot powered by advanced language models. I can help with questions, tasks, and conversations!</div>
-                                </div>
-                                <div class="chat-input-area">
-                                    <input type="text" class="chat-input" placeholder="Type a message...">
-                                    <button class="chat-send" id="previewSendBtn">➤</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- AI Config Tab -->
-            <div class="tab-content hidden" id="ai">
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>🤖 AI Model Selection</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="model-grid">
-                            <div class="model-card active" data-model="gpt-4o">
-                                <h4>GPT-4o</h4>
-                                <p>OpenAI's latest</p>
-                                <span class="badge">Recommended</span>
-                            </div>
-                            <div class="model-card" data-model="gpt-4o-mini">
-                                <h4>GPT-4o Mini</h4>
-                                <p>Fast & Affordable</p>
-                            </div>
-                            <div class="model-card" data-model="claude-3.5">
-                                <h4>Claude 3.5</h4>
-                                <p>Anthropic</p>
-                            </div>
-                            <div class="model-card" data-model="gemini-pro">
-                                <h4>Gemini Pro</h4>
-                                <p>Google</p>
-                            </div>
-                            <div class="model-card" data-model="llama-3">
-                                <h4>Llama 3</h4>
-                                <p>Meta (Open)</p>
-                            </div>
-                            <div class="model-card" data-model="ollama">
-                                <h4>Local (Ollama)</h4>
-                                <p>Self-hosted</p>
-                            </div>
-                            <div class="model-card" data-model="custom">
-                                <h4>Custom API</h4>
-                                <p>Your own endpoint</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>⚙️ AI Parameters</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>System Prompt</label>
-                            <textarea id="systemPrompt" placeholder="You are a helpful AI assistant...">You are a friendly, helpful AI assistant. Be conversational but professional. Keep responses concise but informative.</textarea>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Temperature (Creativity)</label>
-                                <div class="range-group">
-                                    <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" onchange="updateRangeValue(this)">
-                                    <span class="range-value" id="temperatureVal">0.7</span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Max Tokens</label>
-                                <input type="number" id="maxTokens" value="2048" min="100" max="32000">
-                            </div>
-                            <div class="form-group">
-                                <label>Top-P</label>
-                                <div class="range-group">
-                                    <input type="range" id="topP" min="0" max="1" step="0.1" value="0.9" onchange="updateRangeValue(this)">
-                                    <span class="range-value" id="topPVal">0.9</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Presence Penalty</label>
-                                <div class="range-group">
-                                    <input type="range" id="presencePenalty" min="-2" max="2" step="0.1" value="0" onchange="updateRangeValue(this)">
-                                    <span class="range-value" id="presencePenaltyVal">0</span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Frequency Penalty</label>
-                                <div class="range-group">
-                                    <input type="range" id="frequencyPenalty" min="-2" max="2" step="0.1" value="0" onchange="updateRangeValue(this)">
-                                    <span class="range-value" id="frequencyPenaltyVal">0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>📚 Knowledge Base</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>Upload Documents</label>
-                            <div class="upload-area" onclick="document.getElementById('docUpload').click()">
-                                <input type="file" id="docUpload" accept=".pdf,.txt,.csv,.docx" multiple>
-                                <div class="upload-icon">📄</div>
-                                <p>Upload PDF, TXT, CSV, or DOCX files</p>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Website URL to Scrape</label>
-                            <input type="url" id="websiteUrl" placeholder="https://example.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Custom Q&A Pairs</label>
-                            <textarea id="qaPairs" placeholder="Q: What are your hours?&#10;A: We're open 9-5&#10;&#10;Q: Where are you located?&#10;A: We're in NYC"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chat Settings Tab -->
-            <div class="tab-content hidden" id="chat">
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>💬 Widget Settings</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="toggle-group">
-                            <div>
-                                <strong>Show Typing Indicator</strong>
-                                <p style="font-size: 0.8rem; color: var(--text-muted)">Display dots while bot is "thinking"</p>
-                            </div>
-                            <div class="toggle active" onclick="this.classList.toggle('active')"></div>
-                        </div>
-                        <div class="toggle-group">
-                            <div>
-                                <strong>Sound Notifications</strong>
-                                <p style="font-size: 0.8rem; color: var(--text-muted)">Play sound on new message</p>
-                            </div>
-                            <div class="toggle" onclick="this.classList.toggle('active')"></div>
-                        </div>
-                        <div class="toggle-group">
-                            <div>
-                                <strong>Message Timestamps</strong>
-                                <p style="font-size: 0.8rem; color: var(--text-muted)">Show time with each message</p>
-                            </div>
-                            <div class="toggle active" onclick="this.classList.toggle('active')"></div>
-                        </div>
-                        <div class="toggle-group">
-                            <div>
-                                <strong>Copy Message Button</strong>
-                                <p style="font-size: 0.8rem; color: var(--text-muted)">Allow copying messages</p>
-                            </div>
-                            <div class="toggle active" onclick="this.classList.toggle('active')"></div>
-                        </div>
-                        <div class="toggle-group">
-                            <div>
-                                <strong>Share Conversation</strong>
-                                <p style="font-size: 0.8rem; color: var(--text-muted)">Allow sharing chat history</p>
-                            </div>
-                            <div class="toggle" onclick="this.classList.toggle('active')"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>💬 Messages</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>Welcome Message</label>
-                            <input type="text" id="welcomeMsg" value="Hi! I'm your AI assistant. How can I help you today?">
-                        </div>
-                        <div class="form-group">
-                            <label>Input Placeholder</label>
-                            <input type="text" id="placeholderMsg" value="Type a message...">
-                        </div>
-                        <div class="form-group">
-                            <label>Error Message</label>
-                            <input type="text" id="errorMsg" value="Oops! Something went wrong. Please try again.">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>🚀 Launch Options</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>Widget Position</label>
-                            <select id="widgetPosition">
-                                <option value="bottom-right">Bottom Right</option>
-                                <option value="bottom-left">Bottom Left</option>
-                                <option value="top-right">Top Right</option>
-                                <option value="top-left">Top Left</option>
-                                <option value="center">Center (Full Page)</option>
-                            </select>
-                        </div>
-                        <div class="toggle-group">
-                            <div>
-                                <strong>Auto-open on Page Load</strong>
-                                <p style="font-size: 0.8rem; color: var(--text-muted)">Chat opens automatically</p>
-                            </div>
-                            <div class="toggle" onclick="this.classList.toggle('active')"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Custom Trigger Phrase</label>
-                            <input type="text" id="triggerPhrase" placeholder="Type 'help' to open chat">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Embed Tab -->
-            <div class="tab-content hidden" id="embed">
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>📦 Embed Code</h2>
-                    </div>
-                    <div class="panel-body">
-                        <p style="margin-bottom: 1rem; color: var(--text-muted)">Copy and paste this code into your website:</p>
-                        <div class="code-preview">
-                            <button class="copy-btn" onclick="copyEmbedCode()">📋 Copy</button>
-                            <code id="embedCode">&lt;script&gt;
-  (function() {
-    var script = document.createElement('script');
-    script.src = 'https://yourdomain.com/botforge.js';
-    script.async = true;
-    script.setAttribute('data-bot-id', 'anastasia-001');
-    document.head.appendChild(script);
-  })();
-&lt;/script&gt;</code>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>🔗 Direct Links</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>Chat Page URL</label>
-                            <input type="text" readonly value="https://botforge.app/c/anastasia" onclick="this.select()">
-                        </div>
-                        <div class="form-group">
-                            <label>API Endpoint</label>
-                            <input type="text" readonly value="https://api.botforge.app/v1/chat/anastasia-001" onclick="this.select()">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>🔌 Webhook Integration</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>Webhook URL</label>
-                            <input type="url" id="webhookUrl" placeholder="https://yourapp.com/webhook">
-                        </div>
-                        <div class="form-group">
-                            <label>Events to Send</label>
-                            <select multiple style="min-height: 120px">
-                                <option selected>new_message</option>
-                                <option selected>conversation_start</option>
-                                <option selected>conversation_end</option>
-                                <option>user_typing</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Analytics Tab -->
-            <div class="tab-content hidden" id="analytics">
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>📈 Overview</h2>
-                        <select>
-                            <option>Last 7 days</option>
-                            <option>Last 30 days</option>
-                            <option>Last 90 days</option>
-                        </select>
-                    </div>
-                    <div class="panel-body">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-value">1,247</div>
-                                <div class="stat-label">Total Conversations</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">89%</div>
-                                <div class="stat-label">Satisfaction Rate</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">2.4m</div>
-                                <div class="stat-label">Avg Response Time</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">12.5k</div>
-                                <div class="stat-label">Messages Sent</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">$4.20</div>
-                                <div class="stat-label">API Cost Today</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">156</div>
-                                <div class="stat-label">Active Users</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>💬 Recent Conversations</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div style="overflow-x: auto;">
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <thead>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <th style="text-align: left; padding: 12px; color: var(--text-muted);">User</th>
-                                        <th style="text-align: left; padding: 12px; color: var(--text-muted);">Messages</th>
-                                        <th style="text-align: left; padding: 12px; color: var(--text-muted);">Duration</th>
-                                        <th style="text-align: left; padding: 12px; color: var(--text-muted);">Rating</th>
-                                        <th style="text-align: left; padding: 12px; color: var(--text-muted);">Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 12px;">Anonymous</td>
-                                        <td style="padding: 12px;">12</td>
-                                        <td style="padding: 12px;">5m 32s</td>
-                                        <td style="padding: 12px;">⭐⭐⭐⭐⭐</td>
-                                        <td style="padding: 12px;">2 min ago</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 12px;">john@example.com</td>
-                                        <td style="padding: 12px;">8</td>
-                                        <td style="padding: 12px;">3m 15s</td>
-                                        <td style="padding: 12px;">⭐⭐⭐⭐</td>
-                                        <td style="padding: 12px;">15 min ago</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 12px;">Anonymous</td>
-                                        <td style="padding: 12px;">23</td>
-                                        <td style="padding: 12px;">12m 45s</td>
-                                        <td style="padding: 12px;">⭐⭐⭐⭐⭐</td>
-                                        <td style="padding: 12px;">1 hour ago</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                
+                <div class="tier">
+                    <div class="tier-name">🏢 Enterprise</div>
+                    <div class="tier-price">$499<span> one-time</span></div>
+                    <p class="tier-desc">+ $199/month hosting</p>
+                    <ul class="tier-features">
+                        <li><strong>Unlimited</strong> AI Chatbots</li>
+                        <li>Unlimited conversations</li>
+                        <li>Most advanced AI brains</li>
+                        <li>Custom training & fine-tuning</li>
+                        <li>Dedicated account manager</li>
+                        <li>SLA guarantee</li>
+                    </ul>
+                    <button class="btn btn-outline" onclick="selectTier('enterprise')">Contact Sales</button>
                 </div>
             </div>
         </div>
-    </main>
-
+        
+        <!-- Demo -->
+        <div class="demo-section">
+            <div class="demo-header">
+                <div class="demo-avatar">🤖</div>
+                <div>
+                    <strong>Your AI Assistant</strong>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Try it now →</p>
+                </div>
+            </div>
+            <div class="demo-chat" id="demoChat">
+                <div class="msg bot">Hi! I'm your business assistant. Ask me anything about our products, services, or hours! 👋</div>
+            </div>
+        </div>
+        
+        <!-- Contact -->
+        <div class="contact" id="contact">
+            <h3>🚀 Get Started Today</h3>
+            <form onsubmit="submitForm(event)">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="name" required placeholder="John Smith">
+                </div>
+                <div class="form-group">
+                    <label>Business Name</label>
+                    <input type="text" id="business" required placeholder="Acme Inc">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" required placeholder="john@company.com">
+                </div>
+                <div class="form-group">
+                    <label>What do you need?</label>
+                    <select id="tier">
+                        <option value="starter">Starter - $29/mo</option>
+                        <option value="professional">Professional - $79/mo</option>
+                        <option value="enterprise">Enterprise - $499 + $199/mo</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%">Send Request</button>
+            </form>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 BotForge. Built for businesses that want results.</p>
+        </div>
+    </div>
+    
     <script>
-        // State
-        let currentBot = { id: 0, name: 'Anastasia' };
-        let currentTab = 'appearance';
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            initTabs();
-            updatePreview();
-            initModelCards();
-        });
-
-        // Tab functionality
-        function initTabs() {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                    document.getElementById(tab.dataset.tab).classList.remove('hidden');
-                    currentTab = tab.dataset.tab;
-                });
-            });
+        // Demo chat interaction
+        const demoMessages = [
+            "What are your business hours?",
+            "We're open Monday-Friday, 9AM-6PM! Is there anything else you'd like to know? 😊",
+            "Do you offer refunds?",
+            "Yes! We offer a 30-day money-back guarantee on all our services. Would you like me to tell you more about what we offer?",
+            "Great! Sign me up."
+            ];
+        let demoStep = 0;
+        
+        function addDemoMessage(text, isUser) {
+            const chat = document.getElementById('demoChat');
+            const msg = document.createElement('div');
+            msg.className = 'msg ' + (isUser ? 'user' : 'bot');
+            msg.textContent = text;
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
         }
-
-        // Model cards
-        function initModelCards() {
-            document.querySelectorAll('.model-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
-                    card.classList.add('active');
-                });
-            });
+        
+        // Simulate user typing
+        setTimeout(() => {
+            addDemoMessage(demoMessages[0], true);
+            setTimeout(() => addDemoMessage(demoMessages[1], false), 800);
+        }, 1500);
+        
+        setTimeout(() => {
+            addDemoMessage(demoMessages[2], true);
+            setTimeout(() => addDemoMessage(demoMessages[3], false), 800);
+        }, 4000);
+        
+        setTimeout(() => {
+            addDemoMessage(demoMessages[4], true);
+        }, 6500);
+        
+        function selectTier(tier) {
+            document.getElementById('tier').value = tier;
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
         }
-
-        // Demo modal
-        function openDemo() {
-            const demoHTML = `
-            <div class="modal-overlay" onclick="this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;">
-                <div class="modal" onclick="event.stopPropagation()" style="background:var(--surface);padding:2rem;border-radius:1rem;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;">
-                    <h2 style="margin-top:0">👁️ BotForge Demo</h2>
-                    <p>This is a preview of how your custom chatbot will look and behave.</p>
-                    <div style="background:var(--surface-light);padding:1rem;border-radius:0.5rem;margin:1rem 0;">
-                        <strong>Demo Bot:</strong> Anastasia<br>
-                        <strong>Persona:</strong> Flirty & Fun AI Companion<br>
-                        <strong>Knowledge:</strong> Loaded from your knowledge base
-                    </div>
-                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0;">
-                        <span style="background:var(--primary);padding:0.25rem 0.5rem;border-radius:0.25rem;font-size:0.8rem">GPT-4o</span>
-                        <span style="background:var(--accent);color:#000;padding:0.25rem 0.5rem;border-radius:0.25rem;font-size:0.8rem">Custom Persona</span>
-                        <span style="background:var(--success);padding:0.25rem 0.5rem;border-radius:0.25rem;font-size:0.8rem">Knowledge Base</span>
-                    </div>
-                    <p style="font-size:0.9rem;color:var(--text-muted)">Try the live preview panel on the right side to test your configuration in real-time!</p>
-                    <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()" style="width:100%">Got it! 🚀</button>
-                </div>
-            </div>`;
-            document.body.insertAdjacentHTML('beforeend', demoHTML);
-        }
-
-        // Pricing modal
-        function openPricing() {
-            const pricingHTML = `
-            <div class="modal-overlay" onclick="this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;">
-                <div class="modal" onclick="event.stopPropagation()" style="background:var(--surface);padding:2rem;border-radius:1rem;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;">
-                    <h2 style="margin-top:0;text-align:center">💰 Choose Your Plan</h2>
-                    <p style="text-align:center;color:var(--text-muted);margin-bottom:1.5rem">Scalable chatbot solutions for every business size</p>
-                    
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:1rem;">
-                        <!-- STARTER -->
-                        <div style="background:var(--surface-light);padding:1.5rem;border-radius:0.75rem;border:2px solid var(--border);">
-                            <h3 style="margin:0 0 0.5rem">🌱 Starter</h3>
-                            <div style="font-size:2rem;font-weight:bold;margin-bottom:0.5rem">$29<span style="font-size:1rem;font-weight:normal;color:var(--text-muted)">/month</span></div>
-                            <p style="color:var(--text-muted);font-size:0.9rem">Perfect for small businesses getting started</p>
-                            <hr style="border-color:var(--border);margin:1rem 0">
-                            <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem">
-                                <li style="margin:0.5rem 0">✓ 1 Chatbot</li>
-                                <li style="margin:0.5rem 0">✓ Basic AI (GPT-3.5, Llama)</li>
-                                <li style="margin:0.5rem 0">✓ 100 conversations/mo</li>
-                                <li style="margin:0.5rem 0">✓ 10MB knowledge base</li>
-                                <li style="margin:0.5rem 0">✓ Standard customization</li>
-                                <li style="margin:0.5rem 0">✓ Email support</li>
-                            </ul>
-                            <button class="btn btn-primary" style="width:100%;margin-top:1rem">Get Started</button>
-                        </div>
-
-                        <!-- PREMIUM -->
-                        <div style="background:var(--surface-light);padding:1.5rem;border-radius:0.75rem;border:2px solid var(--primary);position:relative;">
-                            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);padding:0.25rem 1rem;border-radius:1rem;font-size:0.8rem;font-weight:bold">MOST POPULAR</div>
-                            <h3 style="margin:0 0 0.5rem">⭐ Premium</h3>
-                            <div style="font-size:2rem;font-weight:bold;margin-bottom:0.5rem">$79<span style="font-size:1rem;font-weight:normal;color:var(--text-muted)">/month</span></div>
-                            <p style="color:var(--text-muted);font-size:0.9rem">Advanced AI for growing businesses</p>
-                            <hr style="border-color:var(--border);margin:1rem 0">
-                            <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem">
-                                <li style="margin:0.5rem 0">✓ 5 Chatbots</li>
-                                <li style="margin:0.5rem 0">✓ <strong>Advanced AI</strong> (GPT-4, Claude)</li>
-                                <li style="margin:0.5rem 0">✓ 1,000 conversations/mo</li>
-                                <li style="margin:0.5rem 0">✓ 100MB knowledge base</li>
-                                <li style="margin:0.5rem 0">✓ Full customization</li>
-                                <li style="margin:0.5rem 0">✓ Webhooks & API access</li>
-                                <li style="margin:0.5rem 0">✓ Priority support</li>
-                            </ul>
-                            <button class="btn btn-primary" style="width:100%;margin-top:1rem">Get Premium</button>
-                        </div>
-
-                        <!-- ENTERPRISE -->
-                        <div style="background:var(--surface-light);padding:1.5rem;border-radius:0.75rem;border:2px solid var(--accent);position:relative;">
-                            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:0.25rem 1rem;border-radius:1rem;font-size:0.8rem;font-weight:bold">ONE-TIME SETUP</div>
-                            <h3 style="margin:0 0 0.5rem">🏢 Enterprise</h3>
-                            <div style="font-size:2rem;font-weight:bold;margin-bottom:0.5rem">$2,499<span style="font-size:1rem;font-weight:normal;color:var(--text-muted)"> one-time</span></div>
-                            <p style="color:var(--text-muted);font-size:0.9rem">+ $199/month hosting</p>
-                            <hr style="border-color:var(--border);margin:1rem 0">
-                            <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem">
-                                <li style="margin:0.5rem 0">✓ <strong>Unlimited</strong> chatbots</li>
-                                <li style="margin:0.5rem 0">✓ All AI models + custom fine-tuning</li>
-                                <li style="margin:0.5rem 0">✓ Unlimited conversations</li>
-                                <li style="margin:0.5rem 0">✓ Unlimited knowledge base</li>
-                                <li style="margin:0.5rem 0">✓ White-label option</li>
-                                <li style="margin:0.5rem 0">✓ Dedicated API endpoints</li>
-                                <li style="margin:0.5rem 0">✓ Custom integrations</li>
-                                <li style="margin:0.5rem 0">✓ Dedicated account manager</li>
-                                <li style="margin:0.5rem 0">✓ SLA guarantee</li>
-                            </ul>
-                            <button class="btn btn-primary" style="width:100%;margin-top:1rem;background:var(--accent);color:#000">Contact Sales</button>
-                        </div>
-                    </div>
-                    
-                    <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()" style="width:100%;margin-top:1rem">Close</button>
-                </div>
-            </div>`;
-            document.body.insertAdjacentHTML('beforeend', pricingHTML);
-        }
-
-        // Preview update
-        function updatePreview() {
-            const botBubble = document.getElementById('botBubbleColor').value;
-            const userBubble = document.getElementById('userBubbleColor').value;
-            const accent = document.getElementById('accentColor').value;
-            const botText = document.getElementById('botTextColor').value;
-            const userText = document.getElementById('userTextColor').value;
-            const inputBg = document.getElementById('inputBgColor').value;
-            const bgType = document.getElementById('bgType').value;
-            const bgColor = document.getElementById('bgColor').value;
-            const bgColor2 = document.getElementById('bgColor2').value;
-            const fontFamily = document.getElementById('fontFamily').value;
-            const fontSize = document.getElementById('fontSize').value;
-            const bubbleStyle = document.getElementById('bubbleStyle').value;
-            const avatarShape = document.getElementById('avatarShape').value;
-
-            // Background
-            const previewBg = document.getElementById('previewBg');
-            if (bgType === 'solid') {
-                previewBg.style.background = bgColor;
-            } else if (bgType === 'gradient') {
-                previewBg.style.background = `linear-gradient(135deg, ${bgColor}, ${bgColor2})`;
-            } else if (bgType === 'image') {
-                previewBg.style.background = previewBg.dataset.bgImage || `url('https://picsum.photos/800/600')`;
-            }
-
-            // Chat messages
-            document.querySelectorAll('.message.bot').forEach(msg => {
-                msg.style.background = botBubble;
-                msg.style.color = botText;
-            });
-            document.querySelectorAll('.message.user').forEach(msg => {
-                msg.style.background = userBubble;
-                msg.style.color = userText;
-            });
-
-            // Border radius
-            const radius = bubbleStyle === 'rounded' ? '16px' : bubbleStyle === 'pill' ? '24px' : '8px';
-            document.querySelectorAll('.message').forEach(msg => {
-                msg.style.borderRadius = radius;
-            });
-
-            // Font
-            document.getElementById('chatPreview').style.fontFamily = fontFamily;
-            document.getElementById('chatPreview').style.fontSize = fontSize;
-
-            // Input
-            document.querySelector('.chat-input').style.background = inputBg;
-            document.querySelector('.chat-input').style.color = '#333';
-
-            // Send button
-            document.getElementById('previewSendBtn').style.background = accent;
-
-            // Show/hide bg options
-            document.getElementById('bgColorRow').classList.toggle('hidden', bgType === 'image' || bgType === 'animated');
-            document.getElementById('bgImageRow').classList.toggle('hidden', bgType !== 'image');
-            document.getElementById('animatedBgRow').classList.toggle('hidden', bgType !== 'animated');
-        }
-
-        // File uploads
-        function handleBgUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('previewBg').dataset.bgImage = `url(${e.target.result})`;
-                    updatePreview();
-                    showToast('Background image uploaded!', 'success');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function handleAvatarUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    updatePreview();
-                    showToast('Avatar uploaded!', 'success');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // Range slider value
-        function updateRangeValue(input) {
-            const valueSpan = document.getElementById(input.id + 'Val');
-            if (valueSpan) {
-                valueSpan.textContent = input.value;
-            }
-        }
-
-        // Create new bot
-        function createNewBot() {
-            const name = prompt('Enter bot name:');
-            if (name) {
-                showToast(`Bot "${name}" created!`, 'success');
-            }
-        }
-
-        // Select bot
-        function selectBot(index) {
-            document.querySelectorAll('.bot-item').forEach((item, i) => {
-                item.classList.toggle('active', i === index);
-            });
-        }
-
-        // Copy embed code
-        function copyEmbedCode() {
-            const code = document.getElementById('embedCode').textContent;
-            navigator.clipboard.writeText(code);
-            showToast('Code copied to clipboard!', 'success');
-        }
-
-        // Toast notification
-        function showToast(message, type = 'success') {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
-
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <span class="toast-icon">${type === 'success' ? '✅' : '❌'}</span>
-                <span>${message}</span>
-            `;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        
+        function submitForm(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const business = document.getElementById('business').value;
+            const email = document.getElementById('email').value;
+            const tier = document.getElementById('tier').value;
+            
+            alert('Thanks ' + name + '! We received your request for the ' + tier + ' plan. We\'ll contact you at ' + email + ' within 24 hours!');
         }
     </script>
 </body>
 </html>
-<!-- Mon Mar  9 07:13:30 PM EDT 2026 -->
