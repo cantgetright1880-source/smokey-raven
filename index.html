@@ -787,6 +787,7 @@
             </div>
             <div class="header-actions">
                 <button class="btn btn-ghost" onclick="openDemo()">▶ Watch Demo</button>
+                <button class="btn btn-ghost" onclick="openPricing()">💰 Pricing</button>
                 <button class="btn btn-ghost">📊 Analytics</button>
                 <button class="btn btn-primary" onclick="createNewBot()">+ New Bot</button>
             </div>
@@ -1428,6 +1429,79 @@
                 </div>
             </div>`;
             document.body.insertAdjacentHTML('beforeend', demoHTML);
+        }
+
+        // Pricing modal
+        function openPricing() {
+            const pricingHTML = `
+            <div class="modal-overlay" onclick="this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;">
+                <div class="modal" onclick="event.stopPropagation()" style="background:var(--surface);padding:2rem;border-radius:1rem;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;">
+                    <h2 style="margin-top:0;text-align:center">💰 Choose Your Plan</h2>
+                    <p style="text-align:center;color:var(--text-muted);margin-bottom:1.5rem">Scalable chatbot solutions for every business size</p>
+                    
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:1rem;">
+                        <!-- STARTER -->
+                        <div style="background:var(--surface-light);padding:1.5rem;border-radius:0.75rem;border:2px solid var(--border);">
+                            <h3 style="margin:0 0 0.5rem">🌱 Starter</h3>
+                            <div style="font-size:2rem;font-weight:bold;margin-bottom:0.5rem">$29<span style="font-size:1rem;font-weight:normal;color:var(--text-muted)">/month</span></div>
+                            <p style="color:var(--text-muted);font-size:0.9rem">Perfect for small businesses getting started</p>
+                            <hr style="border-color:var(--border);margin:1rem 0">
+                            <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem">
+                                <li style="margin:0.5rem 0">✓ 1 Chatbot</li>
+                                <li style="margin:0.5rem 0">✓ Basic AI (GPT-3.5, Llama)</li>
+                                <li style="margin:0.5rem 0">✓ 100 conversations/mo</li>
+                                <li style="margin:0.5rem 0">✓ 10MB knowledge base</li>
+                                <li style="margin:0.5rem 0">✓ Standard customization</li>
+                                <li style="margin:0.5rem 0">✓ Email support</li>
+                            </ul>
+                            <button class="btn btn-primary" style="width:100%;margin-top:1rem">Get Started</button>
+                        </div>
+
+                        <!-- PREMIUM -->
+                        <div style="background:var(--surface-light);padding:1.5rem;border-radius:0.75rem;border:2px solid var(--primary);position:relative;">
+                            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);padding:0.25rem 1rem;border-radius:1rem;font-size:0.8rem;font-weight:bold">MOST POPULAR</div>
+                            <h3 style="margin:0 0 0.5rem">⭐ Premium</h3>
+                            <div style="font-size:2rem;font-weight:bold;margin-bottom:0.5rem">$79<span style="font-size:1rem;font-weight:normal;color:var(--text-muted)">/month</span></div>
+                            <p style="color:var(--text-muted);font-size:0.9rem">Advanced AI for growing businesses</p>
+                            <hr style="border-color:var(--border);margin:1rem 0">
+                            <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem">
+                                <li style="margin:0.5rem 0">✓ 5 Chatbots</li>
+                                <li style="margin:0.5rem 0">✓ <strong>Advanced AI</strong> (GPT-4, Claude)</li>
+                                <li style="margin:0.5rem 0">✓ 1,000 conversations/mo</li>
+                                <li style="margin:0.5rem 0">✓ 100MB knowledge base</li>
+                                <li style="margin:0.5rem 0">✓ Full customization</li>
+                                <li style="margin:0.5rem 0">✓ Webhooks & API access</li>
+                                <li style="margin:0.5rem 0">✓ Priority support</li>
+                            </ul>
+                            <button class="btn btn-primary" style="width:100%;margin-top:1rem">Get Premium</button>
+                        </div>
+
+                        <!-- ENTERPRISE -->
+                        <div style="background:var(--surface-light);padding:1.5rem;border-radius:0.75rem;border:2px solid var(--accent);position:relative;">
+                            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:0.25rem 1rem;border-radius:1rem;font-size:0.8rem;font-weight:bold">ONE-TIME SETUP</div>
+                            <h3 style="margin:0 0 0.5rem">🏢 Enterprise</h3>
+                            <div style="font-size:2rem;font-weight:bold;margin-bottom:0.5rem">$2,499<span style="font-size:1rem;font-weight:normal;color:var(--text-muted)"> one-time</span></div>
+                            <p style="color:var(--text-muted);font-size:0.9rem">+ $199/month hosting</p>
+                            <hr style="border-color:var(--border);margin:1rem 0">
+                            <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem">
+                                <li style="margin:0.5rem 0">✓ <strong>Unlimited</strong> chatbots</li>
+                                <li style="margin:0.5rem 0">✓ All AI models + custom fine-tuning</li>
+                                <li style="margin:0.5rem 0">✓ Unlimited conversations</li>
+                                <li style="margin:0.5rem 0">✓ Unlimited knowledge base</li>
+                                <li style="margin:0.5rem 0">✓ White-label option</li>
+                                <li style="margin:0.5rem 0">✓ Dedicated API endpoints</li>
+                                <li style="margin:0.5rem 0">✓ Custom integrations</li>
+                                <li style="margin:0.5rem 0">✓ Dedicated account manager</li>
+                                <li style="margin:0.5rem 0">✓ SLA guarantee</li>
+                            </ul>
+                            <button class="btn btn-primary" style="width:100%;margin-top:1rem;background:var(--accent);color:#000">Contact Sales</button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()" style="width:100%;margin-top:1rem">Close</button>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', pricingHTML);
         }
 
         // Preview update
