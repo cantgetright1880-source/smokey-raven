@@ -7,11 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --secondary: #0f0f23;
-            --surface: #1a1a2e;
-            --surface-light: #252542;
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --secondary: #0c0c1a;
+            --surface: #151528;
+            --surface-light: #1e1e3a;
             --accent: #f59e0b;
             --success: #10b981;
             --error: #ef4444;
@@ -786,6 +786,7 @@
                 <h1>Bot<span>Forge</span></h1>
             </div>
             <div class="header-actions">
+                <button class="btn btn-ghost" onclick="openDemo()">▶ Watch Demo</button>
                 <button class="btn btn-ghost">📊 Analytics</button>
                 <button class="btn btn-primary" onclick="createNewBot()">+ New Bot</button>
             </div>
@@ -842,11 +843,11 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Bot Message Bubble</label>
-                                <input type="color" id="botBubbleColor" value="#6366f1" onchange="updatePreview()">
+                                <input type="color" id="botBubbleColor" value="#8b5cf6" onchange="updatePreview()">
                             </div>
                             <div class="form-group">
                                 <label>User Message Bubble</label>
-                                <input type="color" id="userBubbleColor" value="#1e1e2e" onchange="updatePreview()">
+                                <input type="color" id="userBubbleColor" value="#1e1e3a" onchange="updatePreview()">
                             </div>
                             <div class="form-group">
                                 <label>Accent Color</label>
@@ -887,11 +888,11 @@
                         <div class="form-row" id="bgColorRow">
                             <div class="form-group">
                                 <label>Background Color</label>
-                                <input type="color" id="bgColor" value="#f8fafc" onchange="updatePreview()">
+                                <input type="color" id="bgColor" value="#151528" onchange="updatePreview()">
                             </div>
                             <div class="form-group">
                                 <label>Gradient Color 2</label>
-                                <input type="color" id="bgColor2" value="#e2e8f0" onchange="updatePreview()">
+                                <input type="color" id="bgColor2" value="#1e1e3a" onchange="updatePreview()">
                             </div>
                         </div>
                         <div class="form-group hidden" id="bgImageRow">
@@ -1403,6 +1404,30 @@
                     card.classList.add('active');
                 });
             });
+        }
+
+        // Demo modal
+        function openDemo() {
+            const demoHTML = `
+            <div class="modal-overlay" onclick="this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;">
+                <div class="modal" onclick="event.stopPropagation()" style="background:var(--surface);padding:2rem;border-radius:1rem;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;">
+                    <h2 style="margin-top:0">👁️ BotForge Demo</h2>
+                    <p>This is a preview of how your custom chatbot will look and behave.</p>
+                    <div style="background:var(--surface-light);padding:1rem;border-radius:0.5rem;margin:1rem 0;">
+                        <strong>Demo Bot:</strong> Anastasia<br>
+                        <strong>Persona:</strong> Flirty & Fun AI Companion<br>
+                        <strong>Knowledge:</strong> Loaded from your knowledge base
+                    </div>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0;">
+                        <span style="background:var(--primary);padding:0.25rem 0.5rem;border-radius:0.25rem;font-size:0.8rem">GPT-4o</span>
+                        <span style="background:var(--accent);color:#000;padding:0.25rem 0.5rem;border-radius:0.25rem;font-size:0.8rem">Custom Persona</span>
+                        <span style="background:var(--success);padding:0.25rem 0.5rem;border-radius:0.25rem;font-size:0.8rem">Knowledge Base</span>
+                    </div>
+                    <p style="font-size:0.9rem;color:var(--text-muted)">Try the live preview panel on the right side to test your configuration in real-time!</p>
+                    <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()" style="width:100%">Got it! 🚀</button>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', demoHTML);
         }
 
         // Preview update
