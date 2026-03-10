@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features - BotForge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #8b5cf6; --primary-hover: #7c3aed; --secondary: #0c0c1a; --surface: #151528; --surface-light: #1e1e3a; --accent: #f59e0b; --success: #10b981; --text: #e2e8f0; --text-muted: #94a3b8; --border: #334155; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--secondary); color: var(--text); min-height: 100vh; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        h1 { font-size: 2.5rem; text-align: center; margin-bottom: 1rem; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 1.2rem; margin-bottom: 3rem; }
+        
+        .feature { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-bottom: 4rem; }
+        .feature.reverse { direction: rtl; }
+        .feature.reverse > * { direction: ltr; }
+        
+        .feature-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .feature h2 { font-size: 2rem; margin-bottom: 1rem; }
+        .feature p { color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem; }
+        .feature ul { list-style: none; }
+        .feature li { padding: 0.5rem 0; color: var(--text-muted); }
+        .feature li::before { content: "✓"; color: var(--success); margin-right: 0.75rem; }
+        
+        .demo { background: var(--surface); border-radius: 16px; padding: 2rem; margin: 3rem 0; text-align: center; }
+        .demo h2 { margin-bottom: 1rem; }
+        .demo p { color: var(--text-muted); margin-bottom: 2rem; }
+        
+        .btn { display: inline-block; padding: 1rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none; background: var(--primary); color: white; }
+        .btn:hover { background: var(--primary-hover); }
+        
+        .back { text-align: center; margin-top: 2rem; }
+        .back a { color: var(--text-muted); text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .feature { grid-template-columns: 1fr; }
+            .feature.reverse { direction: ltr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Powerful Features</h1>
+        <p class="subtitle">Everything you need to create amazing AI chatbots</p>
+        
+        <div class="feature">
+            <div>
+                <div class="feature-icon">🧠</div>
+                <h2>Smart AI Responses</h2>
+                <p>Our AI understands context and provides accurate, helpful responses. It learns from your knowledge base to give customers exactly what they need.</p>
+                <ul>
+                    <li>Natural conversation flow</li>
+                    <li>Remembers context</li>
+                    <li>Handles complex questions</li>
+                    <li>Multiple language support</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="feature reverse">
+            <div>
+                <div class="feature-icon">📚</div>
+                <h2>Knowledge Base</h2>
+                <p>Upload your documents, FAQs, and more. The AI uses them to answer questions accurately.</p>
+                <ul>
+                    <li>PDF, DOCX, TXT support</li>
+                    <li>Website scraping</li>
+                    <li>Q&A pairs</li>
+                    <li>Auto-updates</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div>
+                <div class="feature-icon">🎨</div>
+                <h2>Fully Customizable</h2>
+                <p>Match your brand perfectly. Colors, fonts, avatar, and more.</p>
+                <ul>
+                    <li>Custom colors</li>
+                    <li>Your logo & avatar</li>
+                    <li>Custom fonts</li>
+                    <li>Personalized greetings</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="feature reverse">
+            <div>
+                <div class="feature-icon">📊</div>
+                <h2>Analytics Dashboard</h2>
+                <p>Track performance, see what works, and improve constantly.</p>
+                <ul>
+                    <li>Conversation stats</li>
+                    <li>Customer satisfaction</li>
+                    <li>Popular topics</li>
+                    <li>Export reports</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div>
+                <div class="feature-icon">🔌</div>
+                <h2>Easy Integration</h2>
+                <p>Add the chatbot to your website in minutes with our simple embed code.</p>
+                <ul>
+                    <li>One line of code</li>
+                    <li>Works with any website</li>
+                    <li>WordPress, Shopify, etc.</li>
+                    <li>Mobile responsive</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="feature reverse">
+            <div>
+                <div class="feature-icon">👤</div>
+                <h2>Human Handoff</h2>
+                <p>When needed, seamlessly transfer to a human agent.</p>
+                <ul>
+                    <li>Smart routing</li>
+                    <li>Email notifications</li>
+                    <li>Full conversation history</li>
+                    <li>Ticket creation</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="demo">
+            <h2>Ready to get started?</h2>
+            <p>Create your first chatbot in minutes. No credit card required.</p>
+            <a href="https://cantgetright1880-source.github.io/smokey-raven/#contact" class="btn">Start Free Trial</a>
+        </div>
+        
+        <div class="back">
+            <a href="https://cantgetright1880-source.github.io/smokey-raven/">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
