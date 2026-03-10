@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BotForge Team</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #0c0c1a 0%, #151528 100%); 
+            min-height: 100vh; 
+            padding: 2rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { 
+            text-align: center; 
+            color: #fff; 
+            font-size: 2.5rem; 
+            margin-bottom: 0.5rem; 
+        }
+        .subtitle { 
+            text-align: center; 
+            color: #94a3b8; 
+            margin-bottom: 2rem; 
+        }
+        .team { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 1rem; 
+            margin-bottom: 2rem;
+        }
+        .bot-card { 
+            background: #151528; 
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            text-align: center;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .bot-card:hover { 
+            transform: translateY(-4px);
+            border-color: #8b5cf6;
+        }
+        .bot-card.selected {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+        .bot-avatar { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+        .bot-name { 
+            font-weight: 600; 
+            color: #fff; 
+            margin-bottom: 0.25rem; 
+        }
+        .bot-role { 
+            font-size: 0.85rem; 
+            color: #94a3b8; 
+        }
+        .chat-area {
+            background: #151528;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        .chat-header {
+            background: #1e1e3a;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid #334155;
+        }
+        .chat-avatar-small {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .chat-info { flex: 1; }
+        .chat-name { color: #fff; font-weight: 600; }
+        .chat-status { color: #10b981; font-size: 0.8rem; }
+        .messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .message {
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+        .message.bot {
+            background: #1e1e3a;
+            color: #e2e8f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .message.user {
+            background: #8b5cf6;
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .input-area {
+            padding: 1rem;
+            border-top: 1px solid #334155;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #1e1e3a;
+            color: #fff;
+            font-size: 1rem;
+        }
+        .input-area input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+        .input-area button {
+            padding: 0.75rem 1.5rem;
+            background: #8b5cf6;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .input-area button:hover {
+            background: #7c3aed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Meet Your BotForge Team</h1>
+        <p class="subtitle">Click on a bot to chat with them</p>
+        
+        <div class="team">
+            <div class="bot-card selected" onclick="selectBot('anna')" data-bot="anna">
+                <div class="bot-avatar" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">💬</div>
+                <div class="bot-name">Anna</div>
+                <div class="bot-role">Support</div>
+            </div>
+            
+            <div class="bot-card" onclick="selectBot('max')" data-bot="max">
+                <div class="bot-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">💰</div>
+                <div class="bot-name">Max</div>
+                <div class="bot-role">Sales</div>
+            </div>
+            
+            <div class="bot-card" onclick="selectBot('chloe')" data-bot="chloe">
+                <div class="bot-avatar" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🎉</div>
+                <div class="bot-name">Chloe</div>
+                <div class="bot-role">Onboarding</div>
+            </div>
+            
+            <div class="bot-card" onclick="selectBot('viva')" data-bot="viva">
+                <div class="bot-avatar" style="background: linear-gradient(135deg, #ec4899, #db2777);">📣</div>
+                <div class="bot-name">Viva</div>
+                <div class="bot-role">Marketing</div>
+            </div>
+        </div>
+        
+        <div class="chat-area">
+            <div class="chat-header">
+                <div class="chat-avatar-small" id="chatAvatar" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">💬</div>
+                <div class="chat-info">
+                    <div class="chat-name" id="chatName">Anna</div>
+                    <div class="chat-status" id="chatStatus">Online • Typically replies instantly</div>
+                </div>
+            </div>
+            <div class="messages" id="messages">
+                <div class="message bot" id="greeting">Hi! I'm Anna, here to help you with any questions.</div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="bot-configs.js"></script>
+    <script>
+        let currentBot = 'anna';
+        
+        const botColors = {
+            anna: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+            max: 'linear-gradient(135deg, #10b981, #059669)',
+            chloe: 'linear-gradient(135deg, #f59e0b, #d97706)',
+            viva: 'linear-gradient(135deg, #ec4899, #db2777)'
+        };
+        
+        const botEmojis = {
+            anna: '💬',
+            max: '💰',
+            chloe: '🎉',
+            viva: '📣'
+        };
+        
+        function selectBot(bot) {
+            currentBot = bot;
+            
+            // Update UI
+            document.querySelectorAll('.bot-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-bot="${bot}"]`).classList.add('selected');
+            
+            document.getElementById('chatAvatar').style.background = botColors[bot];
+            document.getElementById('chatAvatar').textContent = botEmojis[bot];
+            document.getElementById('chatName').textContent = BotConfigs[bot].name;
+            
+            // Reset chat
+            document.getElementById('messages').innerHTML = 
+                `<div class="message bot">${BotConfigs[bot].greeting}</div>`;
+        }
+        
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            const messages = document.getElementById('messages');
+            messages.innerHTML += `<div class="message user">${message}</div>`;
+            messages.scrollTop = messages.scrollHeight;
+            input.value = '';
+            
+            // Simulate bot response
+            setTimeout(() => {
+                const botConfig = BotConfigs[currentBot];
+                const responses = {
+                    anna: [
+                        "I'd be happy to help with that! Let me explain...",
+                        "Great question! Here's what you need to know...",
+                        "I understand. Let me walk you through it step by step.",
+                        "No problem! Let me look into that for you."
+                    ],
+                    max: [
+                        "That's a great question! Let me tell you about our plans...",
+                        "I'd love to help you find the perfect plan!",
+                        "Let me show you how BotForge can save you money...",
+                        "Here's what makes BotForge worth the investment..."
+                    ],
+                    chloe: [
+                        "Awesome! Let me walk you through the setup process...",
+                        "Great choice! Here's what we need to do first...",
+                        "Let's get you up and running! Step one is...",
+                        "I love your enthusiasm! Here's your onboarding plan..."
+                    ],
+                    viva: [
+                        "You're going to love BotForge! Here's why...",
+                        "Did you know businesses using AI support see 70% fewer tickets?",
+                        "Let me tell you about our most popular features...",
+                        "Join hundreds of businesses already using BotForge!"
+                    ]
+                };
+                
+                const randomResponse = responses[currentBot][Math.floor(Math.random() * responses[currentBot].length)];
+                messages.innerHTML += `<div class="message bot">${randomResponse}</div>`;
+                messages.scrollTop = messages.scrollHeight;
+            }, 500);
+        }
+    </script>
+</body>
+</html>
