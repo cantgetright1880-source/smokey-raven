@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - BotForge</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0c0c1a; color: #e2e8f0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .container { background: #151528; padding: 2rem; border-radius: 12px; max-width: 400px; width: 100%; text-align: center; }
+        h1 { margin-bottom: 1rem; }
+        p { color: #94a3b8; margin-bottom: 2rem; }
+        .btn { background: #8b5cf6; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; cursor: pointer; width: 100%; }
+        .btn:hover { background: #7c3aed; }
+        .loading { opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧊 BotForge Checkout</h1>
+        <p id="status">Loading...</p>
+        <button id="checkoutBtn" class="btn">Proceed to Payment</button>
+    </div>
+    
+    <script>
+        // Stripe config
+        const stripe = Stripe('pk_test_51T9HMsDwGN6mFX9A6EDvld1UP93U00K7pRfr41eYJ6koi4qebZes0kICfIxORuMEQKJztr3KRLcH2Ntc8AZPqhvw001h4aOD0z');
+        
+        // Get plan from URL
+        const params = new URLSearchParams(window.location.search);
+        const plan = params.get('plan') || 'starter';
+        
+        // Plan configs (you'll replace price IDs from Stripe Dashboard)
+        const plans = {
+            starter: { name: 'Starter', price: 29, priceId: 'price_STARTER_ID' },
+            professional: { name: 'Professional', price: 79, priceId: 'price_PROFESSIONAL_ID' },
+            enterprise: { name: 'Enterprise', price: 199, priceId: 'price_ENTERPRISE_ID' }
+        };
+        
+        const selectedPlan = plans[plan] || plans.starter;
+        
+        document.getElementById('status').textContent = selectedPlan.name + ' Plan - $' + selectedPlan.price + '/month';
+        
+        document.getElementById('checkoutBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('checkoutBtn');
+            btn.textContent = 'Processing...';
+            btn.classList.add('loading');
+            
+            // For now, show message - need to create price IDs in Stripe first
+            alert('⚠️ Setup needed:\n\n1. Go to stripe.com → Products\n2. Create products for Starter, Professional, Enterprise\n3. Add the price IDs to checkout.js\n\nOr use Stripe Payment Links for instant setup!');
+            
+            btn.textContent = 'Proceed to Payment';
+            btn.classList.remove('loading');
+        });
+    </script>
+</body>
+</html>
