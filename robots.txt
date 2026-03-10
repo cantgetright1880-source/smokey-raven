@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cantgetright1880-source.github.io/smokey-raven/sitemap.xml
