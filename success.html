@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to BotForge!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #8b5cf6; --primary-hover: #7c3aed; --secondary: #0c0c1a; --surface: #151528; --accent: #f59e0b; --success: #10b981; --text: #e2e8f0; --text-muted: #94a3b8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--secondary); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        
+        .container { text-align: center; max-width: 500px; padding: 2rem; }
+        
+        .icon { font-size: 4rem; margin-bottom: 1rem; }
+        
+        h1 { font-size: 2rem; margin-bottom: 1rem; color: var(--success); }
+        
+        p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem; }
+        
+        .btn { display: inline-block; padding: 1rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 1rem; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        
+        .card { background: var(--surface); border-radius: 16px; padding: 2rem; margin-top: 2rem; text-align: left; }
+        .card h3 { margin-bottom: 1rem; color: var(--primary); }
+        .card ul { list-style: none; }
+        .card li { padding: 0.5rem 0; color: var(--text-muted); }
+        .card li::before { content: "✓ "; color: var(--success); margin-right: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🎉</div>
+        <h1>You're In!</h1>
+        <p>Thanks for your interest in BotForge. We've received your request and our team will be in touch within 24 hours.</p>
+        
+        <a href="https://cantgetright1880-source.github.io/smokey-raven/" class="btn btn-primary">Back to Home</a>
+        
+        <div class="card">
+            <h3>What happens next?</h3>
+            <ul>
+                <li>Our team reviews your request</li>
+                <li>We'll email you to discuss your needs</li>
+                <li>We'll set up a demo chatbot for you</li>
+                <li>You go live in as little as 24 hours</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
