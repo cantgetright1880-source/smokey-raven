@@ -324,9 +324,18 @@
             <!-- Customers Page -->
             <div id="page-customers" class="hidden">
                 <div class="header">
-                    <h1>👥 Customers</h1>
+                    <h1>👥 Customers & Leads</h1>
                     <button class="btn btn-primary">+ Add Customer</button>
                 </div>
+                
+                <!-- Leads Section -->
+                <div class="card">
+                    <h3>📝 New Leads</h3>
+                    <div id="leads-list">
+                        <p style="color: var(--text-muted);">Loading leads...</p>
+                    </div>
+                </div>
+                
                 <div class="card">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
@@ -404,6 +413,39 @@
             document.getElementById('page-' + page).classList.remove('hidden');
             
             if (page === 'bots') renderBots();
+            if (page === 'customers') loadLeads();
+        }
+        
+        // Load leads from localStorage
+        function loadLeads() {
+            const leadsList = document.getElementById('leads-list');
+            if (!leadsList) return;
+            
+            try {
+                const leads = JSON.parse(localStorage.getItem('botforge_leads') || '[]');
+                
+                if (leads.length === 0) {
+                    leadsList.innerHTML = '<p style="color: var(--text-muted);">No leads yet. Test the form at the landing page!</p>';
+                    return;
+                }
+                
+                let html = '<table style="width: 100%;">';
+                leads.forEach(lead => {
+                    const date = new Date(lead.timestamp).toLocaleDateString();
+                    html += `
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 0.75rem;">${lead.name}<br><span style="color: var(--text-muted); font-size: 0.85rem;">${lead.business}</span></td>
+                            <td style="padding: 0.75rem;">${lead.email}</td>
+                            <td style="padding: 0.75rem;"><span style="background: var(--primary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem;">${lead.tier}</span></td>
+                            <td style="padding: 0.75rem; color: var(--text-muted); font-size: 0.85rem;">${date}</td>
+                        </tr>
+                    `;
+                });
+                html += '</table>';
+                leadsList.innerHTML = html;
+            } catch(e) {
+                leadsList.innerHTML = '<p style="color: var(--error);">Error loading leads</p>';
+            }
         }
         
         // Tab switching
