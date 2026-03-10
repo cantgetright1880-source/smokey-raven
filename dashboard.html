@@ -284,7 +284,7 @@
                 <div class="header">
                     <h1>📊 Analytics</h1>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                <div id="analytics-stats" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
                     <div class="card" style="text-align: center;">
                         <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">12</div>
                         <div style="color: var(--text-muted);">Active Bots</div>
@@ -414,6 +414,41 @@
             
             if (page === 'bots') renderBots();
             if (page === 'customers') loadLeads();
+            if (page === 'analytics') loadAnalytics();
+        }
+        
+        // Load analytics from localStorage
+        function loadAnalytics() {
+            const analytics = JSON.parse(localStorage.getItem('botforge_analytics') || '[]');
+            const leads = JSON.parse(localStorage.getItem('botforge_leads') || '[]');
+            
+            // Update stats
+            const sessions = [...new Set(analytics.filter(e => e.event === 'session_start').map(e => e.userId))].length;
+            const messages = analytics.filter(e => e.event === 'message_sent').length;
+            const handoffs = analytics.filter(e => e.event === 'human_handoff_requested').length;
+            
+            // Update DOM
+            const stats = document.getElementById('analytics-stats');
+            if (stats) {
+                stats.innerHTML = `
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">${leads.length}</div>
+                        <div style="color: var(--text-muted);">Total Leads</div>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--success);">${sessions || 0}</div>
+                        <div style="color: var(--text-muted);">Chat Sessions</div>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent);">${messages || 0}</div>
+                        <div style="color: var(--text-muted);">Messages</div>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #ef4444;">${handoffs || 0}</div>
+                        <div style="color: var(--text-muted);">Human Handoffs</div>
+                    </div>
+                `;
+            }
         }
         
         // Load leads from localStorage
