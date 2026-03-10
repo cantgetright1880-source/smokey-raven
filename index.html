@@ -249,7 +249,21 @@
             const email = document.getElementById('email').value;
             const tier = document.getElementById('tier').value;
             
-            alert('Thanks ' + name + '! We received your request for the ' + tier + ' plan. We\'ll contact you at ' + email + ' within 24 hours!');
+            // Show success message
+            const btn = e.target.querySelector('button');
+            btn.textContent = '✅ Sent!';
+            btn.disabled = true;
+            
+            // Log the lead (in production, this would send to our backend)
+            console.log('📝 NEW LEAD:', { name, business, email, tier, timestamp: new Date().toISOString() });
+            
+            // Show confirmation
+            alert('Thanks ' + name + '! 🎉\n\nWe received your request for the ' + tier + ' plan.\n\nWe\'ll contact you at ' + email + ' within 24 hours!\n\n(This is a test - form will connect to agent soon)');
+            
+            // Reset form
+            e.target.reset();
+            btn.textContent = 'Send Request';
+            btn.disabled = false;
         }
     </script>
 </body>
