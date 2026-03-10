@@ -172,22 +172,22 @@
         <!-- Contact -->
         <div class="contact" id="contact">
             <h3>🚀 Get Started Today</h3>
-            <form onsubmit="submitForm(event)">
+            <form id="leadForm" onsubmit="submitForm(event)">
                 <div class="form-group">
                     <label>Your Name</label>
-                    <input type="text" id="name" required placeholder="John Smith">
+                    <input type="text" id="name" name="name" required placeholder="John Smith">
                 </div>
                 <div class="form-group">
                     <label>Business Name</label>
-                    <input type="text" id="business" required placeholder="Acme Inc">
+                    <input type="text" id="business" name="business" required placeholder="Acme Inc">
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" id="email" required placeholder="john@company.com">
+                    <input type="email" id="email" name="email" required placeholder="john@company.com">
                 </div>
                 <div class="form-group">
                     <label>What do you need?</label>
-                    <select id="tier">
+                    <select id="tier" name="tier">
                         <option value="starter">Starter - $29/mo</option>
                         <option value="professional">Professional - $79/mo</option>
                         <option value="enterprise">Enterprise - $499 + $199/mo</option>
@@ -244,24 +244,41 @@
         
         function submitForm(e) {
             e.preventDefault();
+            const form = e.target;
             const name = document.getElementById('name').value;
             const business = document.getElementById('business').value;
             const email = document.getElementById('email').value;
             const tier = document.getElementById('tier').value;
             
+            // Create lead object
+            const lead = { 
+                name, 
+                business, 
+                email, 
+                tier, 
+                timestamp: new Date().toISOString(),
+                status: 'new'
+            };
+            
+            // Store in localStorage (for demo - in production, send to backend)
+            const leads = JSON.parse(localStorage.getItem('botforge_leads') || '[]');
+            leads.push(lead);
+            localStorage.setItem('botforge_leads', JSON.stringify(leads));
+            
             // Show success message
-            const btn = e.target.querySelector('button');
+            const btn = form.querySelector('button');
             btn.textContent = '✅ Sent!';
             btn.disabled = true;
             
-            // Log the lead (in production, this would send to our backend)
-            console.log('📝 NEW LEAD:', { name, business, email, tier, timestamp: new Date().toISOString() });
+            // Log for debugging
+            console.log('📝 NEW LEAD:', lead);
+            console.log('📊 Total leads:', leads.length);
             
             // Show confirmation
-            alert('Thanks ' + name + '! 🎉\n\nWe received your request for the ' + tier + ' plan.\n\nWe\'ll contact you at ' + email + ' within 24 hours!\n\n(This is a test - form will connect to agent soon)');
+            alert('Thanks ' + name + '! 🎉\n\nWe received your request for the ' + tier + ' plan.\n\nWe\'ll contact you at ' + email + ' within 24 hours!');
             
             // Reset form
-            e.target.reset();
+            form.reset();
             btn.textContent = 'Send Request';
             btn.disabled = false;
         }
