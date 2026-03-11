@@ -259,8 +259,8 @@
         }, 6500);
         
         function selectTier(tier) {
-            document.getElementById('tier').value = tier;
-            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+            // Redirect to checkout with the selected plan
+            window.location.href = 'checkout.html?plan=' + tier;
         }
         
         function submitForm(e) {
@@ -281,19 +281,31 @@
                 status: 'new'
             };
             
-            // Store in localStorage (for demo - in production, send to backend)
+            // Store in localStorage (backup)
             const leads = JSON.parse(localStorage.getItem('botforge_leads') || '[]');
             leads.push(lead);
             localStorage.setItem('botforge_leads', JSON.stringify(leads));
             
-            // Show success message
+            // Show sending state
             const btn = form.querySelector('button');
-            btn.textContent = '✅ Sent!';
+            btn.textContent = '⏳ Sending...';
             btn.disabled = true;
             
-            // Log for debugging
-            console.log('📝 NEW LEAD:', lead);
-            console.log('📊 Total leads:', leads.length);
+            // Send lead notification email via serverless function or direct
+            fetch('https://api.sendclaw.com/v1/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    from: 'BotForge Leads <nova_openclaw@sendclaw.com>',
+                    to: '8464449857@phone.email', // Jeremy's SMS
+                    subject: '🔔 NEW LEAD: ' + tier + ' plan - ' + name,
+                    body: 'New BotForge Lead!\n\nName: ' + name + '\nBusiness: ' + business + '\nEmail: ' + email + '\nPlan: ' + tier + '\nTime: ' + lead.timestamp
+                })
+            }).then(() => {
+                console.log('📧 Lead notification sent');
+            }).catch(err => {
+                console.log('📧 Email notification skipped (API not available in browser)');
+            });
             
             // Show confirmation
             alert('Thanks ' + name + '! 🎉\n\nWe received your request for the ' + tier + ' plan.\n\nWe\'ll contact you at ' + email + ' within 24 hours!');
