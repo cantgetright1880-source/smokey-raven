@@ -5,3 +5,4 @@ data/
 .DS_Store
 API-KEYS.md
 VERCEL-SETUP.md
+.vercel

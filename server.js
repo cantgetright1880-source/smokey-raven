@@ -75,7 +75,12 @@ app.use((req, res, next) => {
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;");
+    // More permissive CSP for dev, restrict in production
+    const isProduction = process.env.VERCEL === '1';
+    const csp = isProduction 
+        ? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;"
+        : "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; connect-src 'self' https:;";
+    res.setHeader('Content-Security-Policy', csp);
     next();
 });
 
@@ -152,8 +157,15 @@ const adminAuth = [requireAdminAuth];
 const dbFile = path.join(__dirname, 'data', 'db.json');
 const dataDir = path.join(__dirname, 'data');
 
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+// Create data directory if it doesn't exist (handle Vercel gracefully)
+let dataDirCreated = false;
+try {
+    if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+        dataDirCreated = true;
+    }
+} catch (e) {
+    console.log('Note: Running in serverless environment, data storage limited');
 }
 
 // Default data structure
