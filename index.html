@@ -110,8 +110,21 @@
             <h2>Choose Your Plan</h2>
             <div class="pricing-grid">
                 <div class="tier">
+                    <div class="tier-name">🆓 Basic</div>
+                    <div class="tier-price">$19.99<span>/month</span></div>
+                    <p class="tier-desc">No AI - Rule-based bot</p>
+                    <ul class="tier-features">
+                        <li>1 Chatbot</li>
+                        <li>Up to 50 conversations/month</li>
+                        <li>Basic customization</li>
+                        <li>Email support</li>
+                    </ul>
+                    <button class="btn btn-outline" onclick="selectTier('basic')">Get Started</button>
+                </div>
+                
+                <div class="tier">
                     <div class="tier-name">🌱 Starter</div>
-                    <div class="tier-price">$29<span>/month</span></div>
+                    <div class="tier-price">$29.99<span>/month</span></div>
                     <p class="tier-desc">Perfect for small businesses</p>
                     <ul class="tier-features">
                         <li>1 AI Chatbot</li>
@@ -125,7 +138,7 @@
                 <div class="tier featured">
                     <div class="tier-badge">MOST POPULAR</div>
                     <div class="tier-name">⭐ Professional</div>
-                    <div class="tier-price">$79<span>/month</span></div>
+                    <div class="tier-price">$79.99<span>/month</span></div>
                     <p class="tier-desc">For growing businesses</p>
                     <ul class="tier-features">
                         <li>3 AI Chatbots</li>
@@ -141,7 +154,7 @@
                 <div class="tier">
                     <div class="tier-name">🏢 Enterprise</div>
                     <div class="tier-price">$499<span> one-time</span></div>
-                    <p class="tier-desc">+ $199/month hosting</p>
+                    <p class="tier-desc">+ $199.99/month hosting</p>
                     <ul class="tier-features">
                         <li><strong>Unlimited</strong> AI Chatbots</li>
                         <li>Unlimited conversations</li>
@@ -188,9 +201,10 @@
                 <div class="form-group">
                     <label>What do you need?</label>
                     <select id="tier" name="tier">
-                        <option value="starter">Starter - $29/mo</option>
-                        <option value="professional">Professional - $79/mo</option>
-                        <option value="enterprise">Enterprise - $499 + $199/mo</option>
+                        <option value="basic">Basic - $19.99/mo (no AI)</option>
+                        <option value="starter">Starter - $29.99/mo</option>
+                        <option value="professional">Professional - $79.99/mo</option>
+                        <option value="enterprise">Enterprise - $499 + $199.99/mo</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%">Send Request</button>
