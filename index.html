@@ -218,7 +218,9 @@
                 <a href="features.html" style="color: var(--text-muted);">Features</a> · 
                 <a href="about.html" style="color: var(--text-muted);">About</a> · 
                 <a href="faq.html" style="color: var(--text-muted);">FAQ</a> · 
-                <a href="testimonials.html" style="color: var(--text-muted);">Testimonials</a>
+                <a href="testimonials.html" style="color: var(--text-muted);">Testimonials</a> ·
+                <a href="privacy.html" style="color: var(--text-muted);">Privacy</a> ·
+                <a href="terms.html" style="color: var(--text-muted);">Terms</a>
             </p>
         </div>
     </div>
@@ -317,6 +319,31 @@
         }
     </script>
     
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#1e1b4b; padding:1rem; text-align:center; border-top:1px solid #4c1d95; z-index:9999;">
+        <p style="margin:0 0 1rem 0; display:inline-block;">
+            🍪 We use cookies to improve your experience. 
+            <a href="cookies.html" style="color:#a78bfa;">Learn more</a>
+        </p>
+        <div>
+            <button onclick="acceptCookies()" style="background:#8b5cf6; color:white; border:none; padding:0.5rem 1.5rem; border-radius:6px; cursor:pointer; margin-right:0.5rem;">Accept</button>
+            <button onclick="rejectCookies()" style="background:transparent; color:#94a3b8; border:1px solid #475569; padding:0.5rem 1.5rem; border-radius:6px; cursor:pointer;">Reject</button>
+        </div>
+    </div>
+    <script>
+        function acceptCookies() {
+            localStorage.setItem('cookie_consent', 'accepted');
+            document.getElementById('cookie-banner').style.display = 'none';
+        }
+        function rejectCookies() {
+            localStorage.setItem('cookie_consent', 'rejected');
+            document.getElementById('cookie-banner').style.display = 'none';
+        }
+        if (!localStorage.getItem('cookie_consent')) {
+            document.getElementById('cookie-banner').style.display = 'block';
+        }
+    </script>
+
     <!-- Chat Widget -->
     <script src="widget.js"></script>
 </body>

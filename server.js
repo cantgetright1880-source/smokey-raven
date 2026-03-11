@@ -11,12 +11,78 @@ const fs = require('fs');
 const path = require('path');
 const { Low } = require('lowdb');
 const { JSONFile } = require('lowdb/node');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ============ SECURITY MIDDLEWARE ============
+
+// Rate limiting - prevent abuse
+const requestCounts = new Map();
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT_MAX = 100; // requests per window
+
+function rateLimiter(req, res, next) {
+    const ip = req.ip || req.connection.remoteAddress;
+    const now = Date.now();
+    
+    if (!requestCounts.has(ip)) {
+        requestCounts.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+        return next();
+    }
+    
+    const client = requestCounts.get(ip);
+    if (now > client.resetTime) {
+        client.count = 1;
+        client.resetTime = now + RATE_LIMIT_WINDOW;
+        return next();
+    }
+    
+    if (client.count >= RATE_LIMIT_MAX) {
+        return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+    }
+    
+    client.count++;
+    next();
+}
+
+// Input sanitization - prevent XSS and injection
+function sanitizeInput(req, res, next) {
+    const sanitize = (obj) => {
+        for (const key in obj) {
+            if (typeof obj[key] === 'string') {
+                // Remove potential script tags and dangerous patterns
+                obj[key] = obj[key]
+                    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                    .replace(/javascript:/gi, '')
+                    .replace(/on\w+=/gi, '')
+                    .trim();
+            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                sanitize(obj[key]);
+            }
+        }
+    };
+    
+    if (req.body) sanitize(req.body);
+    if (req.query) sanitize(req.query);
+    next();
+}
+
+// Security headers
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;");
+    next();
+});
+
 // Middleware
 app.use(cors());
+app.use(rateLimiter); // Apply rate limiting
+app.use(sanitizeInput); // Apply input sanitization
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
