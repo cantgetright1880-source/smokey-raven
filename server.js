@@ -89,7 +89,14 @@ app.use(cors());
 app.use(rateLimiter); // Apply rate limiting
 app.use(sanitizeInput); // Apply input sanitization
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static('public'));
+
+// Serve static files from root directory (where HTML files are)
+const publicPath = path.join(__dirname, 'public');
+if (fs.existsSync(publicPath)) {
+    app.use(express.static(publicPath));
+}
+// Also serve from root for HTML files
+app.use(express.static(__dirname));
 
 // ============ ADMIN AUTHENTICATION (set via ADMIN_PASSWORD env var) ============
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -810,7 +817,7 @@ app.get('/chat/:botId', async (req, res) => {
 
 // Serve main app
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ============ START SERVER ============
