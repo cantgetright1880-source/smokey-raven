@@ -86,6 +86,68 @@ app.use(sanitizeInput); // Apply input sanitization
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
+// ============ ADMIN AUTHENTICATION (set via ADMIN_PASSWORD env var) ============
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+// Simple session-based auth
+const adminSessions = new Map();
+
+function requireAdminAuth(req, res, next) {
+    // Skip auth if no password configured
+    if (!ADMIN_PASSWORD) {
+        return next();
+    }
+    
+    const sessionId = req.headers['x-admin-session'] || req.query.session;
+    
+    if (sessionId && adminSessions.has(sessionId) && adminSessions.get(sessionId) > Date.now()) {
+        return next();
+    }
+    
+    // Check basic auth header
+    const authHeader = req.headers['authorization'];
+    if (authHeader) {
+        const [type, credentials] = authHeader.split(' ');
+        if (type === 'Basic') {
+            const [username, password] = Buffer.from(credentials, 'base64').toString().split(':');
+            if (username === 'admin' && password === ADMIN_PASSWORD) {
+                const sessionId = crypto.randomBytes(32).toString('hex');
+                adminSessions.set(sessionId, Date.now() + 24*60*60*1000);
+                res.setHeader('X-Admin-Session', sessionId);
+                return next();
+            }
+        }
+    }
+    
+    res.setHeader('WWW-Authenticate', 'Basic realm="BotForge Admin"');
+    return res.status(401).json({ error: 'Authentication required' });
+}
+
+// Admin login endpoint
+app.post('/api/admin/login', (req, res) => {
+    if (!ADMIN_PASSWORD) {
+        return res.status(503).json({ error: 'Admin not configured' });
+    }
+    const { password } = req.body;
+    if (password === ADMIN_PASSWORD) {
+        const sessionId = crypto.randomBytes(32).toString('hex');
+        adminSessions.set(sessionId, Date.now() + 24*60*60*1000);
+        res.json({ success: true, session: sessionId });
+    } else {
+        res.status(401).json({ error: 'Invalid password' });
+    }
+});
+
+// Admin logout
+app.post('/api/admin/logout', (req, res) => {
+    const sessionId = req.headers['x-admin-session'];
+    if (sessionId) adminSessions.delete(sessionId);
+    res.json({ success: true });
+});
+
+// Protected admin routes middleware
+const adminAuth = [requireAdminAuth];
+
 // ============ DATABASE SETUP (LowDB - Free, file-based) ============
 const dbFile = path.join(__dirname, 'data', 'db.json');
 const dataDir = path.join(__dirname, 'data');
@@ -333,7 +395,7 @@ app.get('/api/bots/:id', async (req, res) => {
 });
 
 // Create bot
-app.post('/api/bots', async (req, res) => {
+app.post('/api/bots', adminAuth, async (req, res) => {
     await db.read();
     const { name, description, personality } = req.body;
     
@@ -372,7 +434,7 @@ app.post('/api/bots', async (req, res) => {
 });
 
 // Update bot
-app.put('/api/bots/:id', async (req, res) => {
+app.put('/api/bots/:id', adminAuth, async (req, res) => {
     await db.read();
     const bot = db.data.bots.find(b => b.id === req.params.id);
     if (!bot) return res.status(404).json({ error: 'Bot not found' });
@@ -383,7 +445,7 @@ app.put('/api/bots/:id', async (req, res) => {
 });
 
 // Delete bot
-app.delete('/api/bots/:id', async (req, res) => {
+app.delete('/api/bots/:id', adminAuth, async (req, res) => {
     await db.read();
     const index = db.data.bots.findIndex(b => b.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: 'Bot not found' });
@@ -394,7 +456,7 @@ app.delete('/api/bots/:id', async (req, res) => {
 });
 
 // Clone bot
-app.post('/api/bots/:id/clone', async (req, res) => {
+app.post('/api/bots/:id/clone', adminAuth, async (req, res) => {
     await db.read();
     const bot = db.data.bots.find(b => b.id === req.params.id);
     if (!bot) return res.status(404).json({ error: 'Bot not found' });
@@ -467,7 +529,7 @@ app.get('/api/presets', (req, res) => {
 });
 
 // Apply personality preset
-app.post('/api/bots/:id/preset/:presetId', async (req, res) => {
+app.post('/api/bots/:id/preset/:presetId', adminAuth, async (req, res) => {
     await db.read();
     const bot = db.data.bots.find(b => b.id === req.params.botId);
     if (!bot) return res.status(404).json({ error: 'Bot not found' });
@@ -484,7 +546,7 @@ app.post('/api/bots/:id/preset/:presetId', async (req, res) => {
 });
 
 // Export chat history
-app.get('/api/bots/:id/export', async (req, res) => {
+app.get('/api/bots/:id/export', adminAuth, async (req, res) => {
     await db.read();
     const bot = db.data.bots.find(b => b.id === req.params.botId);
     if (!bot) return res.status(404).json({ error: 'Bot not found' });
