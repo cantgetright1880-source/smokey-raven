@@ -6,6 +6,7 @@
  * - Security: Helmet, Rate Limiting, Input Sanitization, Stripe
  */
 
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -518,6 +519,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
             return res.status(400).json({ error: 'Invalid plan' });
         }
 
+        const origin = req.headers.origin || 'http://localhost:3000';
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [{
@@ -525,15 +527,15 @@ app.post('/api/create-checkout-session', async (req, res) => {
                 quantity: 1
             }],
             mode: 'subscription',
-            success_url: `${req.headers.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${req.headers.origin}/pricing.html`,
+            success_url: `${origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${origin}/pricing.html`,
             customer_email: req.body.email
         });
 
         res.json({ url: session.url });
     } catch (error) {
-        console.error('Stripe error:', error);
-        res.status(500).json({ error: 'Payment initialization failed' });
+        console.error('Stripe error:', error.message, error.type);
+        res.status(500).json({ error: 'Payment initialization failed', details: error.message });
     }
 });
 
