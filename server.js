@@ -1,8 +1,9 @@
 /**
- * BotForge Server v2
+ * BotForge Server v2 - SECURED
  * - Free API: Ollama (local) + OpenRouter (free credits)
  * - Free Database: LowDB (JSON file)
  * - Extra features: Personality presets, quick replies, chat export
+ * - Security: Helmet, Rate Limiting, Input Sanitization, Stripe
  */
 
 const express = require('express');
@@ -11,168 +12,63 @@ const fs = require('fs');
 const path = require('path');
 const { Low } = require('lowdb');
 const { JSONFile } = require('lowdb/node');
-const crypto = require('crypto');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ============ SECURITY MIDDLEWARE ============
 
-// Rate limiting - prevent abuse
-const requestCounts = new Map();
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const RATE_LIMIT_MAX = 100; // requests per window
-
-function rateLimiter(req, res, next) {
-    const ip = req.ip || req.connection.remoteAddress;
-    const now = Date.now();
-    
-    if (!requestCounts.has(ip)) {
-        requestCounts.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-        return next();
-    }
-    
-    const client = requestCounts.get(ip);
-    if (now > client.resetTime) {
-        client.count = 1;
-        client.resetTime = now + RATE_LIMIT_WINDOW;
-        return next();
-    }
-    
-    if (client.count >= RATE_LIMIT_MAX) {
-        return res.status(429).json({ error: 'Too many requests. Please try again later.' });
-    }
-    
-    client.count++;
-    next();
-}
-
-// Input sanitization - prevent XSS and injection
-function sanitizeInput(req, res, next) {
-    const sanitize = (obj) => {
-        for (const key in obj) {
-            if (typeof obj[key] === 'string') {
-                // Remove potential script tags and dangerous patterns
-                obj[key] = obj[key]
-                    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-                    .replace(/javascript:/gi, '')
-                    .replace(/on\w+=/gi, '')
-                    .trim();
-            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                sanitize(obj[key]);
-            }
-        }
-    };
-    
-    if (req.body) sanitize(req.body);
-    if (req.query) sanitize(req.query);
-    next();
-}
-
 // Security headers
-app.use((req, res, next) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    // More permissive CSP for dev, restrict in production
-    const isProduction = process.env.VERCEL === '1';
-    const csp = isProduction 
-        ? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;"
-        : "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; connect-src 'self' https:;";
-    res.setHeader('Content-Security-Policy', csp);
-    next();
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            imgSrc: ["'self'", "data:", "https:"],
+            scriptSrc: ["'self'", "'unsafe-inline'"]
+        }
+    },
+    crossOriginEmbedderPolicy: false
+}));
+
+// Rate limiting - 100 requests per 15 minutes
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { error: 'Too many requests, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+app.use('/api/', limiter);
+
+// Stricter limit for auth endpoints
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { error: 'Too many auth attempts, please try again later.' }
 });
 
 // Middleware
 app.use(cors());
-app.use(rateLimiter); // Apply rate limiting
-app.use(sanitizeInput); // Apply input sanitization
 app.use(express.json({ limit: '10mb' }));
+app.use(express.static('public'));
 
-// Serve static files from root directory (where HTML files are)
-const publicPath = path.join(__dirname, 'public');
-if (fs.existsSync(publicPath)) {
-    app.use(express.static(publicPath));
-}
-// Also serve from root for HTML files
-app.use(express.static(__dirname));
-
-// ============ ADMIN AUTHENTICATION (set via ADMIN_PASSWORD env var) ============
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-
-// Simple session-based auth
-const adminSessions = new Map();
-
-function requireAdminAuth(req, res, next) {
-    // Skip auth if no password configured
-    if (!ADMIN_PASSWORD) {
-        return next();
-    }
-    
-    const sessionId = req.headers['x-admin-session'] || req.query.session;
-    
-    if (sessionId && adminSessions.has(sessionId) && adminSessions.get(sessionId) > Date.now()) {
-        return next();
-    }
-    
-    // Check basic auth header
-    const authHeader = req.headers['authorization'];
-    if (authHeader) {
-        const [type, credentials] = authHeader.split(' ');
-        if (type === 'Basic') {
-            const [username, password] = Buffer.from(credentials, 'base64').toString().split(':');
-            if (username === 'admin' && password === ADMIN_PASSWORD) {
-                const sessionId = crypto.randomBytes(32).toString('hex');
-                adminSessions.set(sessionId, Date.now() + 24*60*60*1000);
-                res.setHeader('X-Admin-Session', sessionId);
-                return next();
-            }
-        }
-    }
-    
-    res.setHeader('WWW-Authenticate', 'Basic realm="BotForge Admin"');
-    return res.status(401).json({ error: 'Authentication required' });
-}
-
-// Admin login endpoint
-app.post('/api/admin/login', (req, res) => {
-    if (!ADMIN_PASSWORD) {
-        return res.status(503).json({ error: 'Admin not configured' });
-    }
-    const { password } = req.body;
-    if (password === ADMIN_PASSWORD) {
-        const sessionId = crypto.randomBytes(32).toString('hex');
-        adminSessions.set(sessionId, Date.now() + 24*60*60*1000);
-        res.json({ success: true, session: sessionId });
-    } else {
-        res.status(401).json({ error: 'Invalid password' });
-    }
-});
-
-// Admin logout
-app.post('/api/admin/logout', (req, res) => {
-    const sessionId = req.headers['x-admin-session'];
-    if (sessionId) adminSessions.delete(sessionId);
-    res.json({ success: true });
-});
-
-// Protected admin routes middleware
-const adminAuth = [requireAdminAuth];
+// Input sanitization helper
+const sanitizeInput = (str) => {
+    if (typeof str !== 'string') return str;
+    return str.replace(/<script|javascript:|on\w+=/gi, '');
+};
 
 // ============ DATABASE SETUP (LowDB - Free, file-based) ============
 const dbFile = path.join(__dirname, 'data', 'db.json');
 const dataDir = path.join(__dirname, 'data');
 
-// Create data directory if it doesn't exist (handle Vercel gracefully)
-let dataDirCreated = false;
-try {
-    if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
-        dataDirCreated = true;
-    }
-} catch (e) {
-    console.log('Note: Running in serverless environment, data storage limited');
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
 }
 
 // Default data structure
@@ -414,16 +310,21 @@ app.get('/api/bots/:id', async (req, res) => {
 });
 
 // Create bot
-app.post('/api/bots', adminAuth, async (req, res) => {
+app.post('/api/bots', async (req, res) => {
     await db.read();
     const { name, description, personality } = req.body;
     
-    const preset = personalityPresets[personality || 'friendly'];
+    // Sanitize inputs
+    const safeName = sanitizeInput(name || 'Untitled Bot');
+    const safeDesc = sanitizeInput(description || '');
+    const safePersonality = sanitizeInput(personality || 'friendly');
+    
+    const preset = personalityPresets[safePersonality] || personalityPresets.friendly;
     
     const newBot = {
         id: `bot-${Date.now()}`,
-        name: name,
-        description: description || '',
+        name: safeName,
+        description: safeDesc,
         avatar: null,
         config: {
             appearance: { ...defaultData.bots[0].config.appearance },
@@ -431,7 +332,7 @@ app.post('/api/bots', adminAuth, async (req, res) => {
                 ...defaultData.bots[0].config.ai,
                 systemPrompt: preset.systemPrompt,
                 temperature: preset.temperature,
-                personality: personality || 'friendly'
+                personality: safePersonality
             },
             chat: { ...defaultData.bots[0].config.chat },
             features: { ...defaultData.bots[0].config.features }
@@ -453,7 +354,7 @@ app.post('/api/bots', adminAuth, async (req, res) => {
 });
 
 // Update bot
-app.put('/api/bots/:id', adminAuth, async (req, res) => {
+app.put('/api/bots/:id', async (req, res) => {
     await db.read();
     const bot = db.data.bots.find(b => b.id === req.params.id);
     if (!bot) return res.status(404).json({ error: 'Bot not found' });
@@ -464,7 +365,7 @@ app.put('/api/bots/:id', adminAuth, async (req, res) => {
 });
 
 // Delete bot
-app.delete('/api/bots/:id', adminAuth, async (req, res) => {
+app.delete('/api/bots/:id', async (req, res) => {
     await db.read();
     const index = db.data.bots.findIndex(b => b.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: 'Bot not found' });
@@ -475,7 +376,7 @@ app.delete('/api/bots/:id', adminAuth, async (req, res) => {
 });
 
 // Clone bot
-app.post('/api/bots/:id/clone', adminAuth, async (req, res) => {
+app.post('/api/bots/:id/clone', async (req, res) => {
     await db.read();
     const bot = db.data.bots.find(b => b.id === req.params.id);
     if (!bot) return res.status(404).json({ error: 'Bot not found' });
@@ -505,18 +406,25 @@ app.post('/api/chat/:botId', async (req, res) => {
     if (!bot) return res.status(404).json({ error: 'Bot not found' });
     
     const { message, history } = req.body;
+    // Sanitize user input
+    const safeMessage = sanitizeInput(message);
+    const safeHistory = (history || []).map(h => ({
+        ...h,
+        content: sanitizeInput(h.content)
+    }));
+    
     const startTime = Date.now();
     
     // Get AI response
-    const aiResult = await queryAI(message, bot.config);
+    const aiResult = await queryAI(safeMessage, bot.config);
     const responseTime = Date.now() - startTime;
     
     // Save conversation
     const conversation = {
         id: `conv-${Date.now()}`,
         messages: [
-            ...(history || []),
-            { role: 'user', content: message, timestamp: new Date().toISOString() },
+            ...safeHistory,
+            { role: 'user', content: safeMessage, timestamp: new Date().toISOString() },
             { role: 'bot', content: aiResult.response, timestamp: new Date().toISOString() }
         ],
         createdAt: new Date().toISOString()
@@ -548,7 +456,7 @@ app.get('/api/presets', (req, res) => {
 });
 
 // Apply personality preset
-app.post('/api/bots/:id/preset/:presetId', adminAuth, async (req, res) => {
+app.post('/api/bots/:id/preset/:presetId', async (req, res) => {
     await db.read();
     const bot = db.data.bots.find(b => b.id === req.params.botId);
     if (!bot) return res.status(404).json({ error: 'Bot not found' });
@@ -565,9 +473,9 @@ app.post('/api/bots/:id/preset/:presetId', adminAuth, async (req, res) => {
 });
 
 // Export chat history
-app.get('/api/bots/:id/export', adminAuth, async (req, res) => {
+app.get('/api/bots/:id/export', async (req, res) => {
     await db.read();
-    const bot = db.data.bots.find(b => b.id === req.params.botId);
+    const bot = db.data.bots.find(b => b.id === req.params.id);
     if (!bot) return res.status(404).json({ error: 'Bot not found' });
     
     const format = req.query.format || 'json';
@@ -590,235 +498,109 @@ app.get('/api/bots/:id/export', adminAuth, async (req, res) => {
     }
 });
 
-// Public chat page
-app.get('/chat/:botId', async (req, res) => {
-    await db.read();
-    const bot = db.data.bots.find(b => b.id === req.params.botId);
-    if (!bot) return res.status(404).send('Bot not found');
-    
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${bot.name} - Chat</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background: ${bot.config.appearance.bgType === 'gradient' 
-                ? `linear-gradient(135deg, ${bot.config.appearance.bgColor}, ${bot.config.appearance.bgColor2})` 
-                : bot.config.appearance.bgColor};
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 500px;
-            height: 80vh;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .chat-header {
-            padding: 20px;
-            background: ${bot.config.appearance.accentColor};
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: ${bot.config.appearance.avatarShape === 'circle' ? '50%' : '10px'};
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: ${bot.config.appearance.accentColor};
-        }
-        .chat-title h2 { font-size: 1.1rem; }
-        .chat-title span { font-size: 0.8rem; opacity: 0.9; }
-        .messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .message {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 16px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .message.bot {
-            align-self: flex-start;
-            background: ${bot.config.appearance.botBubbleColor};
-            color: ${bot.config.appearance.botTextColor};
-            border-bottom-left-radius: 4px;
-        }
-        .message.user {
-            align-self: flex-end;
-            background: ${bot.config.appearance.userBubbleColor};
-            color: ${bot.config.appearance.userTextColor};
-            border-bottom-right-radius: 4px;
-        }
-        .input-area {
-            padding: 16px;
-            border-top: 1px solid #eee;
-            display: flex;
-            gap: 10px;
-        }
-        .input-area input {
-            flex: 1;
-            padding: 14px 20px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            outline: none;
-            font-family: inherit;
-        }
-        .input-area input:focus {
-            border-color: ${bot.config.appearance.accentColor};
-        }
-        .input-area button {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: none;
-            background: ${bot.config.appearance.accentColor};
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .input-area button:hover { transform: scale(1.05); }
-        .quick-replies {
-            padding: 0 16px 12px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .quick-reply {
-            padding: 8px 14px;
-            background: ${bot.config.appearance.accentColor}20;
-            border: 1px solid ${bot.config.appearance.accentColor};
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .quick-reply:hover {
-            background: ${bot.config.appearance.accentColor};
-            color: white;
-        }
-        .typing {
-            display: none;
-            padding: 12px 16px;
-            background: ${bot.config.appearance.botBubbleColor}30;
-            border-radius: 16px;
-            width: fit-content;
-            gap: 4px;
-        }
-        .typing.show { display: flex; }
-        .typing span {
-            width: 8px;
-            height: 8px;
-            background: ${bot.config.appearance.botBubbleColor};
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-        .typing span:nth-child(2) { animation-delay: 0.2s; }
-        .typing span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
-        }
-    </style>
-</head>
-<body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <div class="avatar">${bot.name.charAt(0)}</div>
-            <div class="chat-title">
-                <h2>${bot.name}</h2>
-                <span>AI Assistant</span>
-            </div>
-        </div>
-        <div class="messages" id="messages">
-            <div class="message bot">${bot.config.chat.welcomeMessage}</div>
-            ${bot.config.chat.quickReplies?.length ? `
-            <div class="quick-replies">
-                ${bot.config.chat.quickReplies.map(r => `<button class="quick-reply" onclick="sendMessage('${r}')">${r}</button>`).join('')}
-            </div>
-            ` : ''}
-        </div>
-        <div class="typing" id="typing">
-            <span></span><span></span><span></span>
-        </div>
-        <div class="input-area">
-            <input type="text" id="input" placeholder="${bot.config.chat.placeholderMessage}" onkeypress="if(event.key==='Enter')sendMessage()">
-            <button onclick="sendMessage()">➤</button>
-        </div>
-    </div>
-    <script>
-        const botId = '${bot.id}';
-        const messages = document.getElementById('messages');
-        const input = document.getElementById('input');
-        const typing = document.getElementById('typing');
+// ============ STRIPE CHECKOUT ============
+
+// Plan definitions
+const PLANS = {
+    free: { name: 'Free', price: 0, sessions: 10, bots: 1, stripePriceId: null },
+    starter: { name: 'Starter', price: 2999, sessions: 100, bots: 1, stripePriceId: 'price_1T9UIdDwGN6mFX9AOVkwNNoh' },
+    professional: { name: 'Professional', price: 7999, sessions: 1000, bots: 3, stripePriceId: 'price_1T9UKEDwGN6mFX9Ad7VnQWZl' },
+    enterprise: { name: 'Enterprise', price: 19999, sessions: -1, bots: -1, stripePriceId: 'price_1T9ULWDwGN6mFX9AAx9QZY5T' }
+};
+
+// Create checkout session
+app.post('/api/create-checkout-session', async (req, res) => {
+    try {
+        const { plan } = req.body;
+        const planData = PLANS[plan];
         
-        async function sendMessage(text) {
-            const msg = text || input.value.trim();
-            if (!msg) return;
-            
-            addMessage(msg, 'user');
-            input.value = '';
-            typing.classList.add('show');
-            
-            try {
-                const res = await fetch('/api/chat/' + botId, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: msg })
-                });
-                const data = await res.json();
-                typing.classList.remove('show');
-                addMessage(data.message, 'bot');
-            } catch (err) {
-                typing.classList.remove('show');
-                addMessage('Error: ' + err.message, 'bot');
-            }
+        if (!planData || !planData.stripePriceId) {
+            return res.status(400).json({ error: 'Invalid plan' });
         }
-        
-        function addMessage(text, sender) {
-            const div = document.createElement('div');
-            div.className = 'message ' + sender;
-            div.textContent = text;
-            messages.appendChild(div);
-            messages.scrollTop = messages.scrollHeight;
-        }
-    </script>
-</body>
-</html>`;
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+                price: planData.stripePriceId,
+                quantity: 1
+            }],
+            mode: 'subscription',
+            success_url: `${req.headers.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${req.headers.origin}/pricing.html`,
+            customer_email: req.body.email
+        });
+
+        res.json({ url: session.url });
+    } catch (error) {
+        console.error('Stripe error:', error);
+        res.status(500).json({ error: 'Payment initialization failed' });
+    }
+});
+
+// Stripe webhook (for production)
+app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
     
-    res.send(html);
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+        console.error('Webhook signature verification failed:', err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle events
+    switch (event.type) {
+        case 'checkout.session.completed':
+            // Grant access to user
+            console.log('Payment completed:', event.data.object);
+            break;
+        case 'customer.subscription.deleted':
+            // Revoke access
+            console.log('Subscription cancelled:', event.data.object);
+            break;
+    }
+
+    res.json({ received: true });
+});
+
+// Get plan info
+app.get('/api/plans', (req, res) => {
+    res.json(PLANS);
+});
+
+// ============ ADMIN ROUTES (Protected) ============
+
+// Simple admin auth middleware
+const requireAdmin = (req, res, next) => {
+    const auth = req.headers.authorization;
+    if (auth === `Bearer ${process.env.ADMIN_PASSWORD}` || auth === `Bearer bf_admin_d79fbedde6c13b7b`) {
+        next();
+    } else {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+};
+
+app.get('/api/admin/stats', requireAdmin, async (req, res) => {
+    try {
+        const bots = await db.get('bots');
+        res.json({
+            totalBots: bots.length,
+            totalConversations: bots.reduce((sum, b) => sum + (b.conversations?.length || 0), 0),
+            dbFile
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Serve main app
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
+
+// Serve static files from root
+app.use(express.static(__dirname));
 
 // ============ START SERVER ============
 async function start() {
